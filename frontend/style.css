@@ -1,17 +1,53 @@
 body {
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
-  background-color: #f4f6f9;
-  text-align: center;
-  margin-top: 100px;
+  height: 100vh;
   background-image: url('imagenes/Admicion.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* opcional */
 }
-.container {
-  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
-  padding: 20px;
+
+#formulario{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: rgba(249, 249, 249, 0.774);
   border-radius: 10px;
-  display: inline-block;
+}
+#formulario h1 {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #adadad;
+  font-size: 24px;
+}
+#formulario form {
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+form .Username {
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin: 30px 0;
+}
+.Username input{
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 16px;
+  border: none;
+  background: none;
+  outline: none;
+}
+.Username label{
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  color: #adadad;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
 }
