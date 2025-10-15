@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Sistema de admisión</title>
+  <link rel="shortcut icon" href="imagenes/Ecuador logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div id="formulario" class="formulario-registro">
+    <h1>Crear Cuenta</h1>
+    <form method="POST" id="registroForm">
+      <div class="Username">
+        <input type="text" id="periodo" value="Cargando..." readonly>
+        <label>Periodo</label>
+      </div>
+
+      <div class="Username">
+        <input type="text" id="nombreCompleto" required>
+        <label>Apellidos y Nombres</label>
+      </div>
+
+      <div class="form-row">
+        <div class="Username">
+          <select id="tipoId" required>
+            <option value="" disabled selected hidden></option>
+            <option value="cedula">Cédula</option>
+            <option value="pasaporte">Pasaporte</option>
+          </select>
+          <label>Tipo de Identificación</label>
+        </div>
+        <div class="Username" id="campoIdentificacion" style="display: none;">
+          <input type="text" id="identificacion" required>
+          <label id="labelIdentificacion">Número de Identificación</label>
+        </div>
+      </div>
+
+      <div class="Username">
+        <input type="email" id="correo" required>
+        <label>Correo Electrónico</label>
+      </div>
+
+      <div class="form-row">
+        <div class="Contraseña">
+          <input type="password" id="contrasena" required><span class="toggle-password">👁️</span>
+          <label>Contraseña</label>
+        </div>
+        <div class="Contraseña">
+          <input type="password" id="confirmarContrasena" required><span class="toggle-password">👁️</span>
+          <label>Confirmar Contraseña</label>
+        </div>
+      </div>
+
+      <input type="submit" value="Validar campos ingresados">
+      <div class="Registrarse">
+        <a href="index.html">Volver</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
