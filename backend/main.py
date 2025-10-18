@@ -1,5 +1,5 @@
-from backend.models.estudiante import Estudiante
-from backend.controllers.inscripciones_controller import InscripcionesController
+from backend.modelos.postulante import Estudiante
+from backend.controladores.inscripciones_controller import InscripcionesController
 
 if __name__ == "__main__":
     controlador = InscripcionesController()
