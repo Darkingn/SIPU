@@ -6,20 +6,22 @@
   <title>Sistema de admisión</title>
   <link rel="shortcut icon" href="imagenes/Ecuador logo.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
+  <script type="module" src="app.js" defer></script>
+  <script type="module" src="comunicacion.js" defer></script>
 </head>
 <body>
-  <div id="formulario" class="formulario-registro">
+  <div id="formulario-registro">
     <h1>Crear Cuenta</h1>
     <form method="POST" id="registroForm">
-      <div class="Username">
-        <input type="text" id="periodo" value="Cargando..." readonly>
-        <label>Periodo</label>
-      </div>
-
-      <div class="Username">
-        <input type="text" id="nombreCompleto" required>
-        <label>Apellidos y Nombres</label>
+      <div class="form-row">
+        <div class="Username">
+          <input type="text" id="periodo" value="Cargando..." readonly>
+          <label>Periodo</label>
+        </div>
+        <div class="Username">
+          <input type="text" id="nombreCompleto" required>
+          <label>Apellidos y Nombres</label>
+        </div>
       </div>
 
       <div class="form-row">
@@ -37,9 +39,18 @@
         </div>
       </div>
 
-      <div class="Username">
-        <input type="email" id="correo" required>
-        <label>Correo Electrónico</label>
+      <div class="form-row">
+        <div class="Username">
+          <select id="universidad" required>
+            <option value="" disabled selected hidden></option>
+            <!-- Esta lista se llenará desde la base de datos en el futuro -->
+          </select>
+          <label>Universidad a la que postula</label>
+        </div>
+        <div class="Username">
+          <input type="email" id="correo" required>
+          <label>Correo Electrónico</label>
+        </div>
       </div>
 
       <div class="form-row">
