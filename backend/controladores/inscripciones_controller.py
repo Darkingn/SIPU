@@ -1,4 +1,4 @@
-from backend.modelos.estudiante import Estudiante
+from backend.modelos.postulante import Estudiante
 from backend.servicios.supabase_service import supabase
 
 class InscripcionesController:
