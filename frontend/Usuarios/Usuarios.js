@@ -30,4 +30,31 @@ document.addEventListener('DOMContentLoaded', () => {
             openMenu.classList.remove('show');
         });
     });
+
+    // --- Lógica para la barra lateral de la página de inscripción ---
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Evita que el enlace recargue la página
+
+            const targetId = link.getAttribute('data-target');
+
+            // Ocultar todas las secciones de contenido y quitar la clase 'active' de los enlaces
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            sidebarLinks.forEach(s_link => {
+                s_link.classList.remove('active');
+            });
+
+            // Mostrar la sección de contenido correcta y marcar el enlace como 'active'
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                link.classList.add('active');
+            }
+        });
+    });
 });

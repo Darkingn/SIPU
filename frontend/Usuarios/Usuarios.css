@@ -1,110 +1,108 @@
+/* Estilos generales para el cuerpo de la página de usuario */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Fija el fondo para que no se desplace */
 }
 
-/* Estilos para la cabecera principal */
+/* --- Cabecera Principal --- */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px 40px;
-    background-color: rgba(249, 249, 249, 0.85);
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* Logo principal a la izquierda */
-.header-logo img {
-    height: 45px;
-}
-
-/* Navegación central */
-.main-nav ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    gap: 15px;
-}
-
-.nav-item {
-    position: relative;
-    gap: 30px;
-}
-
-.main-nav a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 10px 15px;
-    transition: color 0.3s ease, border-bottom 0.3s ease;
-    border-bottom: 2px solid transparent;
-}
-
-.main-nav a:hover {
-    color: #0056b3;
-    border-bottom: 2px solid #0056b3;
-}
-
-/* Sección del perfil a la derecha */
-.profile-section {
-    position: relative;
-}
-
-.profile-logo {
-    height: 45px;
-    width: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    object-fit: cover;
-    border: 2px solid #ccc;
-}
-
-/* Menú desplegable */
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    width: max-content;
-    min-width: 220px;
-    overflow: hidden;
+    padding: 10px 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
     z-index: 1000;
 }
 
-.profile-dropdown {
-    top: 60px;
-    right: 0;
+.header-logo img {
+    height: 50px;
+    width: auto;
 }
 
-.nav-dropdown {
-    top: 45px;
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para el texto activo en la barra de navegación */
+.nav-link.active {
+    color: #0056b3;
+    font-weight: bold;
+    cursor: default;
+}
+
+/* --- Menús Desplegables --- */
+.nav-item, .profile-section {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none; /* Oculto por defecto */
+    position: absolute;
+    top: 100%;
     left: 0;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    min-width: 180px;
+    z-index: 1001;
+}
+
+.dropdown-menu.show {
+    display: block; /* Visible cuando tiene la clase 'show' */
 }
 
 .dropdown-menu a {
     display: block;
-    padding: 12px 20px;
+    padding: 12px 15px;
     text-decoration: none;
     color: #333;
-    font-size: 15px;
+    transition: background-color 0.2s;
 }
 
 .dropdown-menu a:hover {
-    background-color: #f5f5f5;
+    background-color: #f2f2f2;
 }
 
-/* Clase para mostrar el menú */
-.dropdown-menu.show {
-    display: block;
+/* --- Sección de Perfil --- */
+.profile-section {
+    display: flex;
+    align-items: center;
+}
+
+.profile-logo {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+.profile-dropdown {
+    right: 0;
+    left: auto;
 }
 
 /* --- Estilos para el Contenido Principal --- */
@@ -153,4 +151,82 @@ body {
     background-color: #004494;
     transform: translateY(-3px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Diseño de la página de Inscripción --- */
+.inscription-layout {
+    display: flex;
+    margin: 20px;
+    gap: 20px;
+}
+
+.sidebar {
+    flex: 0 0 250px; /* Ancho fijo de 250px */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-link:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar-link.active {
+    background-color: #007bffb4; /* Color azul para el elemento activo */
+    color: white;
+    font-weight: bold;
+}
+
+/* --- Panel de Contenido --- */
+.content-panel {
+    flex-grow: 1; /* Ocupa el resto del espacio */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content-section {
+    display: none; /* Oculto por defecto */
+}
+
+.content-section.active {
+    display: block; /* Se muestra cuando está activo */
+}
+
+.content-section h2 {
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+.btn-volver {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #e11a1abd;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-volver:hover {
+    background-color: #495057;
 }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <!-- El título y el favicon se cargarán dinámicamente -->
+    <title>{{ universidad.nombre }} - Portal de Admisión</title>
+    <link rel="shortcut icon" href="{{ universidad.favicon_url }}" type="image/x-icon">
+    <link rel="stylesheet" href="Usuarios.css">
+    <script src="Usuarios.js" defer></script>
+</head>
+
+<!-- La imagen de fondo se carga dinámicamente -->
+<body style="background-image: url('{{ universidad.fondo_url | default('../imagenes/fondo ecu.avif') }}');">
+    <!-- El color de fondo de la cabecera se puede personalizar por universidad -->
+    <header class="main-header" style="background-color: {{ universidad.color_principal | default('rgba(249, 249, 249, 0.85)') }};">
+        <div class="header-logo">
+            <!-- El logo se carga desde la URL de la universidad -->
+            <img src="{{ universidad.logo_url }}" alt="Logo de {{ universidad.nombre }}">
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li class="nav-item">
+                    <span ></span>Proceso Inscripción</span>
+                </li>
+            </ul>
+        </nav>
+        <div class="profile-section">
+            <!-- La foto de perfil del usuario también es dinámica -->
+            <img src="{{ usuario.foto_perfil_url | default('../imagenes/perfil.webp') }}" alt="Foto P" class="profile-logo" id="profileLogo">
+            <div class="dropdown-menu profile-dropdown" id="profileMenu">
+                <a href="/configuracion">Configuración</a>
+                <a href="/logout">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="inscription-layout">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <!-- La clase 'active' marca el elemento seleccionado por defecto -->
+                    <li><a href="#" class="sidebar-link active" data-target="terminos">Términos y Condiciones</a></li>
+                    <li><a href="#" class="sidebar-link" data-target="datos-personales">Datos Personales</a></li>
+                    <li><a href="#" class="sidebar-link" data-target="registro-nacional">Registro Nacional</a></li>
+                    <li><a href="#" class="sidebar-link" data-target="postular-carrera">Postular Carrera</a></li>
+                    <li><a href="#" class="sidebar-link" data-target="examen">Examen</a></li>
+                    <li><a href="#" class="sidebar-link" data-target="asignacion-cupo">Asignación de Cupo</a></li>
+                    <div>
+                        <a href="Usuarios.html" class="btn-volver" >Volver</a>
+                    </div>
+                </ul>
+            </nav>
+        </aside>
+
+        <section class="content-panel">
+            <!-- Contenido para Términos y Condiciones (visible por defecto) -->
+            <div id="terminos" class="content-section active">
+                <h2>Términos y Condiciones</h2>
+                <p>Se mostraran los terminos y condiciones de la uni {{ universidad.nombre }}.</p>
+            </div>
+
+            <!-- Contenido para Datos Personales (oculto por defecto) -->
+            <div id="datos-personales" class="content-section">
+                <h2>Datos Personales</h2>
+                <p>aqui se mostraran todos los datos del usuario y otros mas para que llene como los datos de docilio o contacto</p>
+            </div>
+
+            <!-- Contenido para Registro Nacional -->
+            <div id="registro-nacional" class="content-section">
+                <h2>Registro Nacional</h2>
+                <p>Aquí se mostrarán los datos del aspirante provenientes del Registro Nacional.</p>
+            </div>
+
+            <!-- Otros paneles de contenido (ocultos) -->
+            <div id="postular-carrera" class="content-section">
+                <h2>Postular Carrera</h2>
+                <p>Aqui se inscribe</p>
+            </div>
+            <div id="examen" class="content-section">
+                <h2>Examen</h2>
+                <p>Aquí se mostrarán los datos del lugar donde le tocará dar la prueba o las instrucciones si es un examen virtual.</p>
+            </div>
+            <div id="asignacion-cupo" class="content-section">
+                <h2>Asignación de Cupo</h2>
+                <p>Esta sección se habilitará en una fase posterior del proceso.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
