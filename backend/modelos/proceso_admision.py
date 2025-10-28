@@ -23,7 +23,7 @@ class ProcesoAdmision:  # Clase base que representa un proceso de admisión gen�
     @nombre.setter
     def nombre(self, value):  # Setter que valida y asigna el nombre
         if not value.strip(): raise ValueError("El nombre no puede estar vacío")  # Validación básica
-        self._nombre = value  # Guarda el nombre
+        self._nombre = value  
 
     @property
     def fecha_inicio(self): return self._fecha_inicio  # Getter para obtener la fecha de inicio
