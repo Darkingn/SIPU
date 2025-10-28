@@ -1,15 +1,14 @@
 import { obtenerPeriodoActual, registrarUsuario } from './comunicacion.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Lógica para cargar el periodo académico actual ---
+    //Lógica para cargar el periodo académico actual
     async function cargarPeriodoActual() {
         const periodoInput = document.getElementById('periodo');
-        if (!periodoInput) return; // No hacer nada si el campo no existe en la página actual
+        if (!periodoInput) return;
 
         try {
             const periodo = await obtenerPeriodoActual();
             periodoInput.value = periodo;
-            // Forzar la actualización visual del label
             periodoInput.parentElement.classList.add('filled');
         } catch (error) {
             periodoInput.value = 'Error al cargar';
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('input, select');
 
     inputs.forEach(input => {
-        // Para inputs que ya tienen valor al cargar la página (como el periodo)
         if (input.value.trim() !== '' || (input.type === 'select-one' && input.selectedIndex > 0)) {
             input.parentElement.classList.add('filled');
         }
@@ -46,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Lógica para mostrar campo de identificación ---
+    //Lógica para mostrar campo de identificación
     const tipoIdSelect = document.getElementById('tipoId');
     const campoIdentificacion = document.getElementById('campoIdentificacion');
     const labelIdentificacion = document.getElementById('labelIdentificacion');
@@ -58,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selection === 'cedula') {
                 campoIdentificacion.style.display = 'block';
                 labelIdentificacion.textContent = 'Número de Cédula';
-                inputIdentificacion.value = ''; // Limpiar campo al cambiar
+                inputIdentificacion.value = '';
                 inputIdentificacion.parentElement.classList.remove('filled');
             } else if (selection === 'pasaporte') {
                 campoIdentificacion.style.display = 'block';
                 labelIdentificacion.textContent = 'Número de Pasaporte';
-                inputIdentificacion.value = ''; // Limpiar campo al cambiar
+                inputIdentificacion.value = '';
                 inputIdentificacion.parentElement.classList.remove('filled');
             } else {
                 campoIdentificacion.style.display = 'none';
@@ -71,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Lógica para mostrar/ocultar contraseña ---
+    //Lógica para mostrar/ocultar contraseña
     const togglePasswordIcons = document.querySelectorAll('.toggle-password');
     togglePasswordIcons.forEach(icon => {
         icon.addEventListener('click', () => {
@@ -86,11 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Lógica de validación del formulario de registro ---
+    //Lógica de validación del formulario de registro
     const registroForm = document.getElementById('registroForm');
     if (registroForm) {
         registroForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Evita el envío real del formulario por ahora
+            e.preventDefault(); //Evita el envío real del formulario por ahora
 
             const contrasena = document.getElementById('contrasena').value;
             const confirmarContrasena = document.getElementById('confirmarContrasena').value;
@@ -100,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Recopilar todos los datos del formulario
+            //Recopila todos los datos del formulario
             const datosUsuario = {
                 periodo: document.getElementById('periodo').value,
                 nombre_completo: document.getElementById('nombreCompleto').value,
@@ -108,13 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 tipo_identificacion: document.getElementById('tipoId').value,
                 identificacion: document.getElementById('identificacion').value,
                 correo: document.getElementById('correo').value,
-                contrasena: contrasena, // Enviar la contraseña para que el backend la encripte
+                contrasena: contrasena, //Envia la contraseña para que el backend la encripte
             };
 
             try {
                 await registrarUsuario(datosUsuario);
                 alert('¡Cuenta creada exitosamente!');
-                // Opcional: redirigir al login
                 window.location.href = 'index.html';
                 
             } catch (error) {
