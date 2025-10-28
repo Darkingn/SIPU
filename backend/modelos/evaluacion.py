@@ -13,43 +13,53 @@ class Evaluacion(ProcesoAdmision):  # Creamos la clase Evaluacion que hereda de 
         Evaluacion._total_evaluaciones += 1  # Cada vez que se crea una evaluación, aumentamos el contador total
 
     @property
-    def fecha(self): return self._fecha  # Retorna la fecha de la evaluación
+    def fecha(self):
+        return self._fecha  # Retorna la fecha de la evaluación
 
     @fecha.setter
     def fecha(self, value):
-        if not value.strip(): raise ValueError("La fecha no puede estar vacía")  # Validamos que la fecha no venga vacía
+        if not value.strip():
+            raise ValueError("La fecha no puede estar vacía")  # Validamos que la fecha no venga vacía
         self._fecha = value  # Si es válida, la guardamos
 
     @property
-    def hora(self): return self._hora  # Devuelve la hora de inicio de la evaluación
+    def hora(self): 
+        return self._hora  # Devuelve la hora de inicio de la evaluación
 
     @hora.setter
     def hora(self, value):
-        if not value.strip(): raise ValueError("La hora no puede estar vacía")  # Validamos que la hora esté definida
+        if not value.strip():
+            raise ValueError("La hora no puede estar vacía")  # Validamos que la hora esté definida
         self._hora = value  # Si es válida, la asignamos
 
     @property
-    def sala(self): return self._sala  # Devuelve la sala asignada para la evaluación
+    def sala(self):
+        return self._sala  # Devuelve la sala asignada para la evaluación
 
     @sala.setter
     def sala(self, value):
-        if not value.strip(): raise ValueError("La sala no puede estar vacía")  # Validamos que no esté vacía
+        if not value.strip(): 
+            raise ValueError("La sala no puede estar vacía")  # Validamos que no esté vacía
         self._sala = value  # Guardamos la sala si pasa la validación
 
     @property
-    def duracion(self): return self._duracion  # Devuelve la duración de la evaluación
+    def duracion(self): 
+        return self._duracion  # Devuelve la duración de la evaluación
 
     @duracion.setter
     def duracion(self, value):
-        if value <= 0: raise ValueError("La duración debe ser mayor a 0")  # Validamos que la duración sea positiva
+        if value <= 0: 
+            raise ValueError("La duración debe ser mayor a 0")  # Validamos que la duración sea positiva
         self._duracion = value  # Si es válida, la guardamos
 
     @property
-    def tipo(self): return self._tipo  # Retorna el tipo de evaluación
+    def tipo(self): 
+        return self._tipo  # Retorna el tipo de evaluación
 
     @tipo.setter
     def tipo(self, value):
-        if not value.strip(): raise ValueError("El tipo no puede estar vacío")  # Validamos que el tipo esté definido
+        if not value.strip(): 
+            raise ValueError("El tipo no puede estar vacío")  # Validamos que el tipo esté definido
         self._tipo = value  # Si es válido, lo guardamos
 
     def iniciar_evaluacion(self):  # Método para cambiar el estado a "En curso"
@@ -68,4 +78,5 @@ class Evaluacion(ProcesoAdmision):  # Creamos la clase Evaluacion que hereda de 
         return f"Evaluación {self._nombre} (Código: {self._codigo}) - {self._tipo} - Fecha: {self._fecha}, Hora: {self._hora}, Sala: {self._sala}, Duración: {self._duracion}h - Estado: {self._estado}"  # Devolvemos los datos completos
 
     @classmethod
-    def total_evaluaciones(cls): return cls._total_evaluaciones  # Devuelve cuántas evaluaciones se han creado en total
+    def total_evaluaciones(cls): 
+        return cls._total_evaluaciones  # Devuelve cuántas evaluaciones se han creado en total

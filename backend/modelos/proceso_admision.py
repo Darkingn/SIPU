@@ -14,7 +14,8 @@ class ProcesoAdmision:  # Clase base que representa un proceso de admisión gen�
 
     @codigo.setter
     def codigo(self, value):  # Setter que valida y asigna el código
-        if not value.strip(): raise ValueError("El código no puede estar vacío")  # Validación para que no quede vacío
+        if not value.strip():
+            raise ValueError("El código no puede estar vacío")  # Validación para que no quede vacío
         self._codigo = value  # Asigna el código al atributo
 
     @property
@@ -22,31 +23,38 @@ class ProcesoAdmision:  # Clase base que representa un proceso de admisión gen�
 
     @nombre.setter
     def nombre(self, value):  # Setter que valida y asigna el nombre
-        if not value.strip(): raise ValueError("El nombre no puede estar vacío")  # Validación básica
+        if not value.strip():
+            raise ValueError("El nombre no puede estar vacío")  # Validación básica
         self._nombre = value  
 
     @property
-    def fecha_inicio(self): return self._fecha_inicio  # Getter para obtener la fecha de inicio
+    def fecha_inicio(self):
+        return self._fecha_inicio  # Getter para obtener la fecha de inicio
 
     @fecha_inicio.setter
     def fecha_inicio(self, value):  # Setter que valida y asigna la fecha de inicio
-        if not value.strip(): raise ValueError("La fecha no puede estar vacía")  # Validamos que no esté vacía
+        if not value.strip():
+            raise ValueError("La fecha no puede estar vacía")  # Validamos que no esté vacía
         self._fecha_inicio = value  # Asigna la fecha al atributo
 
     @property
-    def responsable(self): return self._responsable  # Getter para obtener el responsable del proceso
+    def responsable(self): 
+        return self._responsable  # Getter para obtener el responsable del proceso
 
     @responsable.setter
     def responsable(self, value):  # Setter que valida y asigna responsable
-        if not value.strip(): raise ValueError("El responsable no puede estar vacío")  # Evita que quede sin responsable
+        if not value.strip():
+            raise ValueError("El responsable no puede estar vacío")  # Evita que quede sin responsable
         self._responsable = value  # Asigna el valor validado
 
     @property
-    def estado(self): return self._estado  # Getter para conocer el estado actual del proceso
+    def estado(self):
+        return self._estado  # Getter para conocer el estado actual del proceso
 
     @estado.setter
     def estado(self, value):  # Setter que valida y asigna el estado
-        if value not in ["No iniciado", "Iniciado", "Finalizado"]: raise ValueError("Estado no válido")  # Solo permite estados válidos
+        if value not in ["No iniciado", "Iniciado", "Finalizado"]:
+            raise ValueError("Estado no válido")  # Solo permite estados válidos
         self._estado = value  # Guarda el estado validado
 
     def iniciar_proceso(self, fecha_inicio=None, comentario=None):  # Método para iniciar el proceso con parámetros opcionales
@@ -68,4 +76,5 @@ class ProcesoAdmision:  # Clase base que representa un proceso de admisión gen�
         return f"Proceso {self._nombre} (Código: {self._codigo}) - Fecha: {self._fecha_inicio} - Responsable: {self._responsable} - Estado: {self._estado}"  # Información completa y organizada
 
     @classmethod
-    def total_procesos(cls): return cls._total_procesos  # Devuelve el número total de procesos creados
+    def total_procesos(cls): 
+        return cls._total_procesos  # Devuelve el número total de procesos creados

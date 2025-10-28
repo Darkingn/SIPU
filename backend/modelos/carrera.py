@@ -10,7 +10,8 @@ class Carrera(ProcesoAdmision):  # Definimos la clase Carrera que hereda de Proc
         Carrera._total_carreras += 1  # Cada vez que se crea una carrera, aumentamos el contador total
 
     @property
-    def duracion(self): return self._duracion  # Devuelve la duración actual de la carrera
+    def duracion(self): 
+        return self._duracion  # Devuelve la duración actual de la carrera
 
     @duracion.setter
     def duracion(self, value):
@@ -18,7 +19,8 @@ class Carrera(ProcesoAdmision):  # Definimos la clase Carrera que hereda de Proc
         self._duracion = value  # Si es válida, la actualizamos
 
     @property
-    def modalidad(self): return self._modalidad  # Retorna la modalidad actual de la carrera
+    def modalidad(self): 
+        return self._modalidad  # Retorna la modalidad actual de la carrera
 
     @modalidad.setter
     def modalidad(self, value):
@@ -29,4 +31,5 @@ class Carrera(ProcesoAdmision):  # Definimos la clase Carrera que hereda de Proc
         return f"Carrera {self._nombre} (Código: {self._codigo}) - Duración: {self._duracion} semestres, Modalidad: {self._modalidad} - Estado: {self._estado}"  # Retornamos un texto con los datos completos
 
     @classmethod
-    def total_carreras(cls): return cls._total_carreras  # Devuelve cuántas carreras se han creado en total
+    def total_carreras(cls): 
+        return cls._total_carreras  # Devuelve cuántas carreras se han creado en total

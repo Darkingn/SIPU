@@ -11,7 +11,8 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
         OfertaAcademica._total_ofertas += 1  # Cada vez que se crea una oferta, aumentamos el contador general
 
     @property
-    def num_carreras(self): return self._num_carreras  # Devuelve el número de carreras disponibles
+    def num_carreras(self): 
+        return self._num_carreras  # Devuelve el número de carreras disponibles
 
     @num_carreras.setter
     def num_carreras(self, value):
@@ -19,23 +20,28 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
         self._num_carreras = value  # Si es válido, lo asignamos
 
     @property
-    def num_areas(self): return self._num_areas  # Devuelve la cantidad de áreas académicas
+    def num_areas(self): 
+        return self._num_areas  # Devuelve la cantidad de áreas académicas
 
     @num_areas.setter
     def num_areas(self, value):
-        if value < 0: raise ValueError("El número de áreas no puede ser negativo")  # No se permiten valores negativos
+        if value < 0: 
+            raise ValueError("El número de áreas no puede ser negativo")  # No se permiten valores negativos
         self._num_areas = value  # Si es correcto, lo guardamos
 
     @property
-    def cupos(self): return self._cupos  # Devuelve el número total de cupos disponibles
+    def cupos(self):
+        return self._cupos  # Devuelve el número total de cupos disponibles
 
     @cupos.setter
     def cupos(self, value):
-        if value < 0: raise ValueError("Los cupos no pueden ser negativos")  # Validamos que los cupos sean positivos
+        if value < 0:
+            raise ValueError("Los cupos no pueden ser negativos")  # Validamos que los cupos sean positivos
         self._cupos = value  # Si pasa la validación, lo guardamos
 
     def actualizar_cupos(self, nuevos_cupos):  # Método para actualizar el número de cupos disponibles
-        if nuevos_cupos < 0: raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
+        if nuevos_cupos < 0: 
+            raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
         self._cupos = nuevos_cupos  # Asignamos el nuevo valor de cupos
         return f"Cupos actualizados a {self._cupos} para la oferta {self._nombre}"  # Retornamos un mensaje de confirmación
 
@@ -43,4 +49,5 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
         return f"Oferta {self._nombre} (Código: {self._codigo}) - Carreras: {self._num_carreras}, Áreas: {self._num_areas}, Cupos: {self._cupos} - Estado: {self._estado}"  # Retornamos los datos clave de la oferta
 
     @classmethod
-    def total_ofertas(cls): return cls._total_ofertas  # Devuelve el número total de ofertas académicas creadas
+    def total_ofertas(cls): 
+        return cls._total_ofertas  # Devuelve el número total de ofertas académicas creadas

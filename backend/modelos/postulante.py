@@ -46,7 +46,8 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @rol.setter
     def rol(self, value):  # Setter que valida el rol ingresado
-        if not value.strip(): raise ValueError("El rol no puede estar vacío")  # Evita que quede sin rol asignado
+        if not value.strip():
+            raise ValueError("El rol no puede estar vacío")  # Evita que quede sin rol asignado
         self._rol = value  # Asigna el rol al postulante
 
     @property
@@ -55,7 +56,8 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @puntaje.setter
     def puntaje(self, value):  # Setter que valida el puntaje
-        if value < 0: raise ValueError("El puntaje no puede ser negativo")  # Se asegura de que el puntaje sea positivo
+        if value < 0: 
+            raise ValueError("El puntaje no puede ser negativo")  # Se asegura de que el puntaje sea positivo
         self._puntaje = value  # Asigna el valor validado al atributo
 
     def inscribirse(self, comentario=None):  # Método que permite inscribirse con un comentario opcional

@@ -10,19 +10,23 @@ class Periodo(ProcesoAdmision):  # Definimos la clase Periodo que hereda de Proc
         Periodo._total_periodos += 1  # Cada vez que se crea un período, aumentamos el contador total
 
     @property
-    def fecha_fin(self): return self._fecha_fin  # Devuelve la fecha de finalización del período
+    def fecha_fin(self):
+        return self._fecha_fin  # Devuelve la fecha de finalización del período
 
     @fecha_fin.setter
     def fecha_fin(self, value):
-        if not value.strip(): raise ValueError("La fecha de fin no puede estar vacía")  # Validamos que la fecha no esté vacía
+        if not value.strip():
+            raise ValueError("La fecha de fin no puede estar vacía")  # Validamos que la fecha no esté vacía
         self._fecha_fin = value  # Si es válida, la guardamos
 
     @property
-    def descripcion(self): return self._descripcion  # Devuelve la descripción del período académico
+    def descripcion(self):
+        return self._descripcion  # Devuelve la descripción del período académico
 
     @descripcion.setter
     def descripcion(self, value):
-        if not value.strip(): raise ValueError("La descripción no puede estar vacía")  # Validamos que la descripción no esté vacía
+        if not value.strip():
+            raise ValueError("La descripción no puede estar vacía")  # Validamos que la descripción no esté vacía
         self._descripcion = value  # Si pasa la validación, la guardamos
 
     def verificar_activo(self, fecha_actual):  # Método que permite verificar si el período está activo o no
@@ -32,4 +36,5 @@ class Periodo(ProcesoAdmision):  # Definimos la clase Periodo que hereda de Proc
         return f"Período {self._nombre} (Código: {self._codigo}) - {self._descripcion} ({self._fecha_inicio} al {self._fecha_fin}) - Estado: {self._estado}"  # Retornamos los datos completos y organizados del período
 
     @classmethod
-    def periodos_activos(cls): return cls._total_periodos  # Devuelve el número total de períodos creados hasta el momento
+    def periodos_activos(cls):
+        return cls._total_periodos  # Devuelve el número total de períodos creados hasta el momento
