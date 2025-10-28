@@ -19,7 +19,7 @@
         </div>
         <nav class="main-nav">
             <ul>
-                <!-- Menú de Oferta Académica (contenido dinámico) -->
+                <!-- Menú de Oferta Académica -->
                 <li class="nav-item">
                     <a href="#" class="nav-link">Oferta Académica</a>
                     <div class="dropdown-menu nav-dropdown">
@@ -28,11 +28,11 @@
                         {% endfor %}
                     </div>
                 </li>
-                <!-- Menú de Registro Nacional (contenido estático/global) -->
+                <!-- Menú de Registro Nacional -->
                 <li class="nav-item">
                     <a href="#" class="nav-link">Verificar R. Nacional</a>
                 </li>
-                <!-- Menú de Instructivos (contenido dinámico) -->
+                <!-- Menú de Instructivos-->
                 <li class="nav-item">
                     <a href="#" class="nav-link">Instructivos</a>
                     <div class="dropdown-menu nav-dropdown">
@@ -41,7 +41,7 @@
                         {% endfor %}
                     </div>
                 </li>
-                <!-- Menú de Normativas (contenido dinámico) -->
+                <!-- Menú de Normativas -->
                 <li class="nav-item">
                     <a href="#" class="nav-link">Normativas</a>
                     <div class="dropdown-menu nav-dropdown">
@@ -53,7 +53,6 @@
             </ul>
         </nav>
         <div class="profile-section">
-            <!-- La foto de perfil del usuario también es dinámica -->
             <img src="{{ usuario.foto_perfil_url | default('../imagenes/perfil.webp') }}" alt="Foto P" class="profile-logo" id="profileLogo">
             <div class="dropdown-menu profile-dropdown" id="profileMenu">
                 <a href="/configuracion">Configuración</a>
@@ -67,7 +66,7 @@
         {% block contenido %}
         <div class="welcome-section">
             <div class="welcome-text">
-                <!-- Este texto se llenará desde la base de datos. El filtro 'safe' permite HTML básico. -->
+                <!-- Este texto se llenará desde la base de datos -->
                 {{ universidad.texto_bienvenida | safe }}
             </div>
             <a href="Inscripcion.html" class="btn-inscribete">Inscríbete</a>

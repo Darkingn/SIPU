@@ -9,7 +9,7 @@ body {
   background-position: center;
 }
 
-/* --- Estilos base para AMBOS formularios --- */
+/*Estilos base para los dos formularios*/
 #formulario-login,
 #formulario-registro {
   position: absolute;
@@ -20,16 +20,15 @@ body {
   border-radius: 10px;
 }
 
-/* --- Anchos específicos para cada formulario --- */
+/*Anchos específicos para cada formulario*/
 #formulario-login {
   width: 400px;
 }
 
 #formulario-registro {
-  width: 800px; /* Ancho fijo para el diseño de 2 columnas */
+  width: 800px;
 }
 
-/* --- Estilos para el título y el contenedor del form (aplicado a ambos) --- */
 #formulario-login h1,
 #formulario-registro h1 {
   text-align: center;
@@ -43,19 +42,19 @@ body {
   padding: 0 40px;
   box-sizing: border-box;
 }
-/* Nuevo contenedor para poner campos en la misma fila */
+
 .form-row {
   display: flex;
-  gap: 20px; /* Espacio entre los campos */
-  align-items: flex-start; /* Alinea los campos en la parte superior */
-  margin-bottom: 30px; /* Espacio vertical entre las filas de campos */
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 30px;
 }
 /* Hacemos que los campos dentro de una fila ocupen el espacio disponible */
 .form-row .Username,
 .form-row .Contraseña {
   flex: 1;
-  margin: 0; /* Eliminamos el margen vertical individual dentro de una fila */
-  min-width: 0; /* Necesario para que flexbox funcione correctamente */
+  margin: 0;
+  min-width: 0;
 }
 form .Username {
   position: relative;
@@ -104,7 +103,7 @@ form .Contraseña {
   margin: 30px 0;  
 }
 .Contraseña input{
-  width: calc(100% - 30px); /* Espacio para el ojo */
+  width: calc(100% - 30px);
   padding: 0 5px;
   height: 40px;
   font-size: 16px;
@@ -122,7 +121,7 @@ form .Contraseña {
   pointer-events: none;
   transition: 0.5s;
 }
-/* Estilos para el icono del ojo */
+
 .toggle-password {
   position: absolute;
   right: 5px;
