@@ -64,4 +64,4 @@ class Universidad(ProcesoAdmision):  # Clase Universidad que hereda de ProcesoAd
         return f"Universidad {self._nombre} (Código: {self._codigo}) - Tipo: {self._tipo}, Ubicación: {self._ubicacion}, Sedes: {', '.join(self._sedes)} - Estado: {self._estado}"  # Devuelve info formateada
 
     @classmethod
-    def total_universidades(cls): return cls._total_universidades  # Método de clase que devuelve total de universidades creadas
+    def total_universidades(cls): return cls._total_universidades  # Método de clase que devuelve total de universidades creada
