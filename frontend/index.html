@@ -4,19 +4,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>Sistema de admisión</title>
-  <link rel="shortcut icon" href="imagenes/Uleam logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="imagenes/Ecuador logo.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
+  <script type="module" src="app.js" defer></script>
 </head>
 <body>
-  <div id ="container">
-    <header>
-      <h1>Sistema de admisión</h1>
-    </header>
-    <section>
-       
-    </section>
-    
+  <div id ="formulario-login">
+    <h1>Sistema de admisión</h1>
+    <form method="POST">
+      <div class = "Username">
+        <input type="text" required>
+        <label>Nombre de Usuario</label>
+      </div>
+      <div class = "Contraseña">
+        <input type="password" required>
+        <label>Contraseña</label>
+      </div>
+      <div class= "Recordar">Olvido su Contraseña?</div>
+      <input type="submit" value="Iniciar Sesión">
+      <div class = "Registrarse">
+        ¿No tienes una cuenta? <a href="registro.html">Regístrate</a>
+      </div>
+    </form>
   </div>
 </body>
 </html>
