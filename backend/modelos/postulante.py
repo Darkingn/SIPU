@@ -1,7 +1,7 @@
-from .proceso_admision import ProcesoAdmision
-from .base_model import BaseModel
-from ..utils.validators import validate_email, validate_cedula, validate_phone, validate_required
-from ..utils.error_handler import ValidationError
+from modelos.proceso_admision import ProcesoAdmision
+from modelos.base_model import BaseModel
+from utils.validators import validate_email, validate_cedula, validate_phone, validate_required
+from utils.error_handler import ValidationError
 
 class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y BaseModel
     _total_postulantes = 0  # Atributo de clase para contar cuántos postulantes se han creado

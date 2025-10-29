@@ -1,5 +1,5 @@
 import re
-from ..utils.error_handler import ValidationError
+from utils.error_handler import ValidationError
 
 def validate_email(email: str) -> bool:
     """

@@ -1,6 +1,6 @@
 from supabase import create_client, Client
-from backend.config import SUPABASE_URL, SUPABASE_KEY
-from backend.utils.error_handler import DatabaseError
+from config import SUPABASE_URL, SUPABASE_KEY
+from utils.error_handler import DatabaseError
 import logging
 
 class SupabaseService:
