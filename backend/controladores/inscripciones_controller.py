@@ -1,13 +1,14 @@
-from backend.modelos.postulante import Estudiante
-from backend.servicios.supabase_service import supabase
+from modelos.postulante import Postulante
+from servicios.supabase_service import SupabaseService
 
 class InscripcionesController:
-    def registrar_estudiante(self, estudiante: Estudiante):
+    def registrar_estudiante(self, estudiante: Postulante):
         data = {
             "id": estudiante.id,
             "nombre": estudiante.nombre,
             "correo": estudiante.correo,
             "carrera": estudiante.carrera
         }
-        res = supabase.table("estudiantes").insert(data).execute()
+        supabase = SupabaseService()
+        res = supabase.client.table("estudiantes").insert(data).execute()
         return res

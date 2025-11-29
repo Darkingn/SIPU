@@ -1,7 +1,9 @@
-from proceso_admision import ProcesoAdmision  # Se importa la clase base del proceso de admisión
-import re  # Se importa el módulo 're' para validar correos con expresiones regulares
+from modelos.proceso_admision import ProcesoAdmision
+from modelos.base_model import BaseModel
+from utils.validators import validate_email, validate_cedula, validate_phone, validate_required
+from utils.error_handler import ValidationError
 
-class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmision
+class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y BaseModel
     _total_postulantes = 0  # Atributo de clase para contar cuántos postulantes se han creado
 
     def __init__(self, codigo, nombre, fecha_inicio, cedula, correo, telefono, rol, puntaje):
@@ -19,8 +21,8 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @cedula.setter
     def cedula(self, value):  # Setter que valida y asigna la cédula
-        if not value.strip(): raise ValueError("La cédula no puede estar vacía")  # Evita que se ingrese una cédula vacía
-        self._cedula = value  # Asigna el valor validado
+        validate_cedula(value)  # Usa el validador de cédula
+        self._cedula = value
 
     @property
     def correo(self):  # Getter para obtener el correo
@@ -28,8 +30,8 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @correo.setter
     def correo(self, value):  # Setter que valida el formato del correo electrónico
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", value): raise ValueError("Correo no válido")  # Usa una expresión regular para validar el formato
-        self._correo = value  # Asigna el correo validado
+        validate_email(value)  # Usa el validador de email
+        self._correo = value
 
     @property
     def telefono(self):  # Getter para obtener el número de teléfono
@@ -37,8 +39,8 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @telefono.setter
     def telefono(self, value):  # Setter para validar el teléfono
-        if not value.strip(): raise ValueError("El teléfono no puede estar vacío")  # Se asegura de que no esté vacío
-        self._telefono = value  # Asigna el número telefónico al atributo
+        validate_phone(value)  # Usa el validador de teléfono
+        self._telefono = value
 
     @property
     def rol(self):  # Getter para acceder al rol del postulante
@@ -46,8 +48,7 @@ class Postulante(ProcesoAdmision):  # La clase Postulante hereda de ProcesoAdmis
 
     @rol.setter
     def rol(self, value):  # Setter que valida el rol ingresado
-        if not value.strip():
-            raise ValueError("El rol no puede estar vacío")  # Evita que quede sin rol asignado
+        validate_required(value, "Rol")  # Usa el validador de campos requeridos
         self._rol = value  # Asigna el rol al postulante
 
     @property

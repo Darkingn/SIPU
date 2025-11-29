@@ -1,10 +1,51 @@
 from supabase import create_client, Client
-from dotenv import load_dotenv
-import os
+from config import SUPABASE_URL, SUPABASE_KEY
+from utils.error_handler import DatabaseError
+import logging
 
-load_dotenv()
+class SupabaseService:
+    _instance = None
+    _client = None
 
-SUPABASE_URL = os.getenv("https://wigmurzhkogmzgdczjmb.supabase.co")
-SUPABASE_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpZ211cnpoa29nbXpnZGN6am1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMTA0NDgsImV4cCI6MjA3NTY4NjQ0OH0.l0Gj1iJ3COqMXMgOPVmnVJhr01YkORw6Q3-hjAbtCEg")
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            try:
+                # Log presence (not value) to help debug missing/invalid keys
+                logging.info(f"SUPABASE_URL present: {bool(SUPABASE_URL)}")
+                logging.info(f"SUPABASE_KEY present: {bool(SUPABASE_KEY)}")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+                cls._client = create_client(SUPABASE_URL, SUPABASE_KEY)
+                logging.info("Supabase client initialized successfully")
+            except Exception as e:
+                logging.error(f"Error initializing Supabase client: {str(e)}")
+                raise DatabaseError("Could not connect to database")
+        return cls._instance
+
+    @property
+    def client(self) -> Client:
+        if not self._client:
+            raise DatabaseError("Database client not initialized")
+        return self._client
+
+    def execute_query(self, query_func):
+        """
+        Ejecuta una consulta con manejo de errores
+        """
+        try:
+            return query_func(self.client)
+        except Exception as e:
+            logging.error(f"Database error: {str(e)}")
+            raise DatabaseError(str(e))
+
+    def health_check(self):
+        """
+        Verifica la conexión a la base de datos
+        """
+        try:
+            # Realiza una consulta simple para verificar la conexión usando la tabla real 'aspirantes'
+            self.client.table('aspirantes').select("id").limit(1).execute()
+            return True
+        except Exception as e:
+            logging.error(f"Database health check failed: {str(e)}")
+            return False
