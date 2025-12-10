@@ -18,7 +18,8 @@ class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdm
 
     @postulante.setter
     def postulante(self, value):  # Setter que valida y asigna el postulante
-        if not value: raise ValueError("El postulante no puede ser nulo")  # Si no hay postulante, lanza un error
+        if not value:
+            raise ValueError("El postulante no puede ser nulo")  # Si no hay postulante, lanza un error
         self._postulante = value  # Asigna el postulante validado
 
     @property
@@ -27,7 +28,8 @@ class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdm
 
     @carrera.setter
     def carrera(self, value):  # Setter para validar la carrera
-        if not value: raise ValueError("La carrera no puede ser nula")  # Evita que la carrera sea vacía
+        if not value:
+            raise ValueError("La carrera no puede ser nula")  # Evita que la carrera sea vacía
         self._carrera = value  # Asigna la carrera al objeto
 
     @property
@@ -36,7 +38,8 @@ class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdm
 
     @sede.setter
     def sede(self, value):  # Setter que valida si la sede pertenece a la universidad del postulante
-        if not value in self._postulante.universidad.sedes: raise ValueError("Sede no válida")  # Comprueba que la sede exista dentro de las sedes registradas
+        if not value in self._postulante.universidad.sedes: 
+            raise ValueError("Sede no válida")  # Comprueba que la sede exista dentro de las sedes registradas
         self._sede = value  # Asigna la sede si es válida
 
     @property
@@ -45,7 +48,8 @@ class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdm
 
     @evaluacion.setter
     def evaluacion(self, value):  # Setter que valida el tipo de dato asignado
-        if not isinstance(value, Evaluacion): raise ValueError("Debe ser un objeto Evaluacion")  # Asegura que el valor sea de tipo Evaluacion
+        if not isinstance(value, Evaluacion): 
+            raise ValueError("Debe ser un objeto Evaluacion")  # Asegura que el valor sea de tipo Evaluacion
         self._evaluacion = value  # Asigna la evaluación al objeto
 
     def iniciar_evaluacion(self):  # Método para iniciar la evaluación
