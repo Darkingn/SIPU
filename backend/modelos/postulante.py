@@ -2,6 +2,12 @@ from modelos.proceso_admision import ProcesoAdmision
 from modelos.base_model import BaseModel
 from utils.validators import validate_email, validate_cedula, validate_phone, validate_required
 from utils.error_handler import ValidationError
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # Evitar import circular en tiempo de ejecución: import en tiempo de ejecución dentro del método
+    from servicios.postulante_service import PostulanteService
+from utils.privacy import mask_id, mask_email, mask_phone, hash_value
 
 class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y BaseModel
     _total_postulantes = 0  # Atributo de clase para contar cuántos postulantes se han creado
@@ -62,12 +68,21 @@ class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y Bas
         self._puntaje = value  # Asigna el valor validado al atributo
 
     def inscribirse(self, comentario=None):  # Método que permite inscribirse con un comentario opcional
-        if self._estado == "No iniciado":  # Solo permite inscribirse si el estado está "No iniciado"
-            self._estado = "Inscrito"  # Cambia el estado del postulante a inscrito
-            if comentario:  # Si el usuario agregó un comentario, lo incluye en el mensaje
-                return f"{self._nombre} se ha inscrito correctamente - Comentario: {comentario}"  # Retorna mensaje con comentario
-            return f"{self._nombre} se ha inscrito correctamente"  # Si no hay comentario, muestra mensaje simple
-        raise ValueError("El postulante no está en estado 'No iniciado'")  # Si no cumple la condición, lanza un error
+        # Delegamos la lógica de negocio a PostulanteService (SRP).
+        # Importar en tiempo de ejecución para evitar ciclos de importación.
+        try:
+            from servicios.postulante_service import PostulanteService
+        except Exception:
+            # Si no está disponible, mantenemos comportamiento local como fallback.
+            if self._estado == "No iniciado":
+                self._estado = "Inscrito"
+                if comentario:
+                    return f"{self._nombre} se ha inscrito correctamente - Comentario: {comentario}"
+                return f"{self._nombre} se ha inscrito correctamente"
+            raise ValueError("El postulante no está en estado 'No iniciado'")
+
+        # Usar el servicio para ejecutar la inscripción
+        return PostulanteService.inscribir(self, comentario)
 
     def obtener_informacion(self):  # Método que muestra toda la información relevante del postulante
         return f"Postulante {self._nombre} (Código: {self._codigo}, Cédula: {self._cedula}) - Correo: {self._correo}, Rol: {self._rol}, Estado: {self._estado}, Puntaje: {self._puntaje}"  # Devuelve un resumen formateado
@@ -75,3 +90,20 @@ class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y Bas
     @classmethod
     def total_postulantes(cls):  # Método de clase que devuelve el total de postulantes creados
         return cls._total_postulantes  # Retorna el contador global de postulantes
+
+    def to_public_dict(self) -> dict:
+        """Devuelve una representación pública del postulante con PII enmascarada."""
+        data = {
+            "codigo": getattr(self, "_codigo", None),
+            "nombres": getattr(self, "_nombre", None),
+            "rol": getattr(self, "_rol", None),
+            "estado": getattr(self, "_estado", None),
+            "puntaje": getattr(self, "_puntaje", None),
+            # Masked PII
+            "cedula_masked": mask_id(getattr(self, "_cedula", None)),
+            "correo_masked": mask_email(getattr(self, "_correo", None)),
+            "telefono_masked": mask_phone(getattr(self, "_telefono", None)),
+            # Hash for internal matching without exposing raw id
+            "ident_hash": hash_value(getattr(self, "_cedula", None)),
+        }
+        return data

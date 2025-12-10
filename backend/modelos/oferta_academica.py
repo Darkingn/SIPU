@@ -42,8 +42,18 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
     def actualizar_cupos(self, nuevos_cupos):  # Método para actualizar el número de cupos disponibles
         if nuevos_cupos < 0: 
             raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
+        # Aplicando OCP: permitimos extender el comportamiento de actualización
+        # sin modificar este método (subclases pueden overridear _on_cupos_actualizados)
         self._cupos = nuevos_cupos  # Asignamos el nuevo valor de cupos
+        self._on_cupos_actualizados(nuevos_cupos)
         return f"Cupos actualizados a {self._cupos} para la oferta {self._nombre}"  # Retornamos un mensaje de confirmación
+
+    def _on_cupos_actualizados(self, nuevos_cupos):
+        """Hook protegido que puede ser overrideado por subclases o estrategias externas
+        para reaccionar a cambios en cupos (OCP).
+        """
+        # Default: no-op. Subclases pueden realizar acciones adicionales.
+        return None
 
     def obtener_info(self):  # Método que muestra toda la información completa de la oferta académica
         return f"Oferta {self._nombre} (Código: {self._codigo}) - Carreras: {self._num_carreras}, Áreas: {self._num_areas}, Cupos: {self._cupos} - Estado: {self._estado}"  # Retornamos los datos clave de la oferta
@@ -51,3 +61,13 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
     @classmethod
     def total_ofertas(cls): 
         return cls._total_ofertas  # Devuelve el número total de ofertas académicas creadas
+
+    def to_public_dict(self) -> dict:
+        return {
+            "codigo": getattr(self, "_codigo", None),
+            "nombre": getattr(self, "_nombre", None),
+            "num_carreras": getattr(self, "_num_carreras", 0),
+            "num_areas": getattr(self, "_num_areas", 0),
+            "cupos": getattr(self, "_cupos", 0),
+            "estado": getattr(self, "_estado", None),
+        }

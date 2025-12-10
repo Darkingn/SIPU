@@ -33,3 +33,12 @@ class Carrera(ProcesoAdmision):  # Definimos la clase Carrera que hereda de Proc
     @classmethod
     def total_carreras(cls): 
         return cls._total_carreras  # Devuelve cuántas carreras se han creado en total
+
+    def to_public_dict(self) -> dict:
+        return {
+            "codigo": getattr(self, "_codigo", None),
+            "nombre": getattr(self, "_nombre", None),
+            "duracion": getattr(self, "_duracion", None),
+            "modalidad": getattr(self, "_modalidad", None),
+            "estado": getattr(self, "_estado", None),
+        }

@@ -1,13 +1,17 @@
 from proceso_admision import ProcesoAdmision  # Importamos la clase base de procesos de admisión
+from typing import Optional
+from modelos.interfaces import IAuthProvider
 
 class Usuario(ProcesoAdmision):  # Clase Usuario que hereda de ProcesoAdmision
     _total_usuarios = 0  # Contador de usuarios creados
 
-    def __init__(self, codigo, nombre, fecha_inicio, cedula, correo, rol):
+    def __init__(self, codigo, nombre, fecha_inicio, cedula, correo, rol, auth_provider: Optional[IAuthProvider] = None):
         super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Inicializamos atributos heredados
         self._cedula = cedula  # Guardamos la cédula del usuario
         self._correo = correo  # Guardamos el correo electrónico
         self._rol = rol  # Rol del usuario (Estudiante, Administrador, etc.)
+        # Inyectamos una abstracción para autenticación/validación externa (DIP)
+        self._auth_provider = auth_provider
         Usuario._total_usuarios += 1  # Incrementamos el contador de usuarios
 
     @property
@@ -46,3 +50,27 @@ class Usuario(ProcesoAdmision):  # Clase Usuario que hereda de ProcesoAdmision
     @classmethod
     def total_usuarios(cls):
         return cls._total_usuarios  # Devuelve el total de usuarios creados
+
+    def authenticate(self, credentials: dict) -> bool:
+        """Intenta autenticar al usuario usando un proveedor inyectado.
+
+        Esta pequeña adaptación introduce DIP: la lógica de autenticar depende de una
+        abstracción (IAuthProvider) en vez de una implementación concreta.
+        """
+        if not self._auth_provider:
+            # Sin proveedor, comportamiento por defecto: fallar la autenticación
+            return False
+        return self._auth_provider.authenticate(self._codigo, credentials)
+
+    def to_public_dict(self) -> dict:
+        """Representación pública de Usuario con PII enmascarada."""
+        from utils.privacy import mask_id, mask_email
+
+        return {
+            "codigo": getattr(self, "_codigo", None),
+            "nombre": getattr(self, "_nombre", None),
+            "rol": getattr(self, "_rol", None),
+            "estado": getattr(self, "_estado", None),
+            "cedula_masked": mask_id(getattr(self, "_cedula", None)),
+            "correo_masked": mask_email(getattr(self, "_correo", None)),
+        }

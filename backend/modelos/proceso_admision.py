@@ -78,3 +78,12 @@ class ProcesoAdmision:  # Clase base que representa un proceso de admisión gen�
     @classmethod
     def total_procesos(cls): 
         return cls._total_procesos  # Devuelve el número total de procesos creados
+
+    def to_public(self) -> dict:
+        """Representación pública mínima del proceso (sin PII)."""
+        return {
+            "codigo": self._codigo,
+            "nombre": self._nombre,
+            "fecha_inicio": self._fecha_inicio,
+            "estado": self._estado,
+        }
