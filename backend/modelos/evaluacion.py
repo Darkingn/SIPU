@@ -12,21 +12,6 @@ class Evaluacion(ProcesoAdmision):  # Creamos la clase Evaluacion que hereda de 
         self._tipo = tipo  # Definimos el tipo de evaluación (por ejemplo, examen, entrevista, etc.)
         Evaluacion._total_evaluaciones += 1  # Cada vez que se crea una evaluación, aumentamos el contador total
 
-    @classmethod
-    def from_schedule(cls, codigo, nombre, fecha_inicio, schedule: dict):
-        """Constructor alternativo (sobrecarga de constructor por convenio) que crea
-        una Evaluacion a partir de un diccionario `schedule` con llaves 'fecha','hora','sala','duracion','tipo'.
-        """
-        return cls(
-            codigo,
-            nombre,
-            fecha_inicio,
-            schedule.get("fecha", ""),
-            schedule.get("hora", ""),
-            schedule.get("sala", ""),
-            schedule.get("duracion", 0),
-            schedule.get("tipo", ""),
-        )
 
     @property
     def fecha(self):

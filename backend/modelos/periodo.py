@@ -48,14 +48,5 @@ class Periodo(ProcesoAdmision):  # Definimos la clase Periodo que hereda de Proc
     @classmethod
     def periodos_activos(cls):
         return cls._total_periodos  # Devuelve el número total de períodos creados hasta el momento
-
-    def to_public_dict(self) -> dict:
-        """Representación pública de Periodo; delega a calendar_service si existe."""
-        return {
-            "codigo": getattr(self, "_codigo", None),
-            "nombre": getattr(self, "_nombre", None),
-            "fecha_inicio": getattr(self, "_fecha_inicio", None),
-            "fecha_fin": getattr(self, "_fecha_fin", None),
-            "descripcion": getattr(self, "_descripcion", None),
-            "estado": getattr(self, "_estado", None),
-        }
+    def verificar_activo(self, fecha_actual):  # Método que permite verificar si el período está activo o no
+        return f"Período {self._codigo} está {'activo' if self.estado == 'Iniciado' else 'inactivo'} en {fecha_actual}"  # Devuelve un texto indicando si está activo o inactivo en una fecha específica

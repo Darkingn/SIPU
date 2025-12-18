@@ -1,42 +1,16 @@
 from proceso_admision import ProcesoAdmision  # Se importa la clase base del proceso de admisión
 from evaluacion import Evaluacion  # Se importa la clase Evaluacion para componerla dentro de Postulacion
-from typing import Optional
 
 
 class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdmision
     _total_postulaciones = 0  # Variable de clase que lleva el conteo total de postulaciones
 
-    def __init__(
-        self,
-        codigo,
-        nombre,
-        fecha_inicio,
-        postulante,
-        carrera,
-        sede,
-        fecha_postulacion,
-        hora,
-        sala,
-        duracion,
-        tipo,
-        evaluacion: Optional[Evaluacion] = None,
-    ):
-        """Ahora `Postulacion` admite inyección de la dependencia `Evaluacion`.
-
-        Si no se provee, se crea una instancia por compatibilidad (fallback).
-        Esto facilita pruebas y respeta DIP.
-        """
+    def __init__(self, codigo, nombre, fecha_inicio, postulante, carrera, sede, fecha_postulacion, hora, sala, duracion, tipo):
         super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Se inicializan los atributos de la clase padre
         self._postulante = postulante  # Se guarda el postulante que realiza la postulación
         self._carrera = carrera  # Se asocia la carrera a la que postula
         self._sede = sede  # Se guarda la sede donde se realiza el proceso
-        if evaluacion is None:
-            # Fallback: crear evaluación si no fue inyectada (mantener compatibilidad)
-            self._evaluacion = Evaluacion(
-                codigo, nombre, fecha_postulacion, fecha_postulacion, hora, sala, duracion, tipo
-            )
-        else:
-            self._evaluacion = evaluacion
+        self._evaluacion = Evaluacion(codigo, nombre, fecha_postulacion, fecha_postulacion, hora, sala, duracion, tipo)  # Se crea una evaluación ligada a la postulación (composición)
         Postulacion._total_postulaciones += 1  # Cada vez que se crea una nueva postulación se incrementa el contador total
 
     @property
@@ -91,21 +65,3 @@ class Postulacion(ProcesoAdmision):  # La clase Postulacion hereda de ProcesoAdm
     @classmethod
     def total_postulaciones(cls):  # Método de clase que devuelve el total de postulaciones
         return cls._total_postulaciones  # Retorna el contador de postulaciones creadas
-
-    def to_public_dict(self) -> dict:
-        """Representación pública de la postulación; incluye información pública del postulante si está disponible."""
-        postulante_public = None
-        try:
-            postulante_public = self._postulante.to_public_dict()
-        except Exception:
-            # Fallback: exponer sólo nombre si no tiene método
-            postulante_public = getattr(self._postulante, "_nombre", str(self._postulante))
-
-        return {
-            "codigo": getattr(self, "_codigo", None),
-            "nombre": getattr(self, "_nombre", None),
-            "carrera": getattr(self, "_carrera", None),
-            "sede": getattr(self, "_sede", None),
-            "postulante": postulante_public,
-            "estado": getattr(self, "_estado", None),
-        }

@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 controlador = InscripcionesController()
+controlador = InscripcionesController()
 
 @app.get("/")
 async def read_root():

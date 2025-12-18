@@ -1,9 +1,5 @@
 from proceso_admision import ProcesoAdmision  # Importamos la clase base que maneja los procesos de admisión
-from modelos.interfaces import IRecursoFacultad, IFacultadInfo
 
-# Facultad implementa dos interfaces pequeñas (ISP) para separar la gestión de recursos
-# de la información de la facultad. En Python esto se documenta y se puede comprobar
-# con Protocols / typing cuando se escriben tests o se inyectan dependencias.
 
 class Facultad(ProcesoAdmision):  # Creamos la clase Facultad que hereda de ProcesoAdmision
     _total_facultades = 0  # Contador general para saber cuántas facultades se han creado
@@ -61,14 +57,4 @@ class Facultad(ProcesoAdmision):  # Creamos la clase Facultad que hereda de Proc
     @classmethod
     def total_facultades(cls): 
         return cls._total_facultades  # Devuelve cuántas facultades se han creado en total
-
-    def to_public_dict(self) -> dict:
-        """Representación pública de Facultad (oculta datos sensibles si hubiera)."""
-        return {
-            "codigo": getattr(self, "_codigo", None),
-            "nombre": getattr(self, "_nombre", None),
-            "decano": getattr(self, "_decano", None),
-            "laboratorios": getattr(self, "_laboratorios", 0),
-            "computadoras": getattr(self, "_computadoras", 0),
-            "estado": getattr(self, "_estado", None),
-        }
+    

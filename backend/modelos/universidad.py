@@ -72,13 +72,6 @@ class Universidad(ProcesoAdmision):  # Clase Universidad que hereda de ProcesoAd
     @classmethod
     def total_universidades(cls):
         return cls._total_universidades  # Método de clase que devuelve total de universidades creada
-
-    def to_public_dict(self) -> dict:
-        """Representación pública de Universidad (no incluye PII de contacto)."""
-        return {
-            "codigo": getattr(self, "_codigo", None),
-            "nombre": getattr(self, "_nombre", None),
-            "tipo": getattr(self, "_tipo", None),
-            "sedes": getattr(self, "_sedes", []),
-            "estado": getattr(self, "_estado", None),
-        }
+    def to_public_info(self) -> str:
+        # Mantener la API original; el método to_public_dict agregado se removió
+        return self.obtener_info()

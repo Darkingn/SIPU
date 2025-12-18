@@ -40,20 +40,9 @@ class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica qu
         self._cupos = value  # Si pasa la validación, lo guardamos
 
     def actualizar_cupos(self, nuevos_cupos):  # Método para actualizar el número de cupos disponibles
-        if nuevos_cupos < 0: 
-            raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
-        # Aplicando OCP: permitimos extender el comportamiento de actualización
-        # sin modificar este método (subclases pueden overridear _on_cupos_actualizados)
+        if nuevos_cupos < 0: raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
         self._cupos = nuevos_cupos  # Asignamos el nuevo valor de cupos
-        self._on_cupos_actualizados(nuevos_cupos)
         return f"Cupos actualizados a {self._cupos} para la oferta {self._nombre}"  # Retornamos un mensaje de confirmación
-
-    def _on_cupos_actualizados(self, nuevos_cupos):
-        """Hook protegido que puede ser overrideado por subclases o estrategias externas
-        para reaccionar a cambios en cupos (OCP).
-        """
-        # Default: no-op. Subclases pueden realizar acciones adicionales.
-        return None
 
     def obtener_info(self):  # Método que muestra toda la información completa de la oferta académica
         return f"Oferta {self._nombre} (Código: {self._codigo}) - Carreras: {self._num_carreras}, Áreas: {self._num_areas}, Cupos: {self._cupos} - Estado: {self._estado}"  # Retornamos los datos clave de la oferta
