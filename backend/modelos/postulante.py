@@ -2,6 +2,7 @@ from modelos.proceso_admision import ProcesoAdmision
 from modelos.base_model import BaseModel
 from utils.validators import validate_email, validate_cedula, validate_phone, validate_required
 from utils.error_handler import ValidationError
+from servicios.event_bus import emit
 
 class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y BaseModel
     _total_postulantes = 0  # Atributo de clase para contar cuántos postulantes se han creado
@@ -61,9 +62,43 @@ class Postulante(ProcesoAdmision, BaseModel):  # Hereda de ProcesoAdmision y Bas
             raise ValueError("El puntaje no puede ser negativo")  # Se asegura de que el puntaje sea positivo
         self._puntaje = value  # Asigna el valor validado al atributo
 
+    def to_public_dict(self):
+        """Devuelve un diccionario con datos públicos del postulante (sin PII sensible)."""
+        return {
+            "codigo": self._codigo,
+            "nombre": self._nombre,
+            "estado": self._estado,
+            "rol": self._rol,
+            "puntaje": self._puntaje
+        }
+
+    def to_dict(self):
+        """Devuelve un diccionario completo del postulante (incluyendo datos sensibles)."""
+        return {
+            "codigo": self._codigo,
+            "nombre": self._nombre,
+            "fecha_inicio": self._fecha_inicio,
+            "cedula": self._cedula,
+            "correo": self._correo,
+            "telefono": self._telefono,
+            "rol": self._rol,
+            "puntaje": self._puntaje,
+            "estado": self._estado
+        }
+
     def inscribirse(self, comentario=None):  # Método que permite inscribirse con un comentario opcional
         if self._estado == "No iniciado":  # Solo permite inscribirse si el estado está "No iniciado"
             self._estado = "Inscrito"  # Cambia el estado del postulante a inscrito
+            # Emitir evento para notificaciones (patrón Observer)
+            try:
+                payload = {
+                    "type": "postulante_inscrito",
+                    "postulante": self.to_public_dict()
+                }
+                emit("postulante_inscrito", payload)
+            except Exception:
+                # No fallar la inscripción si el bus falla
+                pass
             if comentario:  # Si el usuario agregó un comentario, lo incluye en el mensaje
                 return f"{self._nombre} se ha inscrito correctamente - Comentario: {comentario}"  # Retorna mensaje con comentario
             return f"{self._nombre} se ha inscrito correctamente"  # Si no hay comentario, muestra mensaje simple

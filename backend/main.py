@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from controladores.inscripciones_controller import InscripcionesController
 from modelos.postulante import Postulante
+from servicios.observers.realtime_pusher import register_realtime
 
 class PostulanteCreate(BaseModel):
     codigo: int
@@ -46,3 +47,6 @@ async def crear_estudiante(estudiante_data: PostulanteCreate):
     )
     resultado = controlador.registrar_estudiante(estudiante)
     return {"mensaje": "Estudiante registrado exitosamente", "estudiante": estudiante.to_dict()}
+
+# Registrar observadores al iniciar la aplicación
+register_realtime()
