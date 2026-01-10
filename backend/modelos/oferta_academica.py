@@ -1,53 +1,69 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base que maneja el proceso de admisión
+from typing import List
 
-class OfertaAcademica(ProcesoAdmision):  # Definimos la clase OfertaAcademica que hereda de ProcesoAdmision
-    _total_ofertas = 0  # Contador general para saber cuántas ofertas académicas se han creado
-
-    def __init__(self, codigo, nombre, fecha_inicio, num_carreras, num_areas, cupos):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Llamamos al constructor del padre para inicializar atributos comunes
-        self._num_carreras = num_carreras  # Guardamos la cantidad de carreras disponibles en la oferta
-        self._num_areas = num_areas  # Guardamos la cantidad de áreas académicas incluidas
-        self._cupos = cupos  # Definimos el número de cupos totales disponibles
-        OfertaAcademica._total_ofertas += 1  # Cada vez que se crea una oferta, aumentamos el contador general
-
-    @property
-    def num_carreras(self): 
-        return self._num_carreras  # Devuelve el número de carreras disponibles
-
-    @num_carreras.setter
-    def num_carreras(self, value):
-        if value < 0: raise ValueError("El número de carreras no puede ser negativo")  # Validamos que el número no sea negativo
-        self._num_carreras = value  # Si es válido, lo asignamos
-
-    @property
-    def num_areas(self): 
-        return self._num_areas  # Devuelve la cantidad de áreas académicas
-
-    @num_areas.setter
-    def num_areas(self, value):
-        if value < 0: 
-            raise ValueError("El número de áreas no puede ser negativo")  # No se permiten valores negativos
-        self._num_areas = value  # Si es correcto, lo guardamos
+# --- SRP: La clase OfertaAcademica ahora es un contenedor de datos reales ---
+class OfertaAcademica:
+    def __init__(self, codigo: str, nombre: str, cupos_totales: int):
+        self.codigo = codigo
+        self.nombre = nombre
+        self._cupos_totales = cupos_totales
+        # DIP: En lugar de un número, usamos una lista de objetos Carrera
+        self._carreras: List = [] 
+        self._areas = set() # Usamos un set para contar áreas únicas automáticamente
 
     @property
     def cupos(self):
-        return self._cupos  # Devuelve el número total de cupos disponibles
+        return self._cupos_totales
 
     @cupos.setter
     def cupos(self, value):
         if value < 0:
-            raise ValueError("Los cupos no pueden ser negativos")  # Validamos que los cupos sean positivos
-        self._cupos = value  # Si pasa la validación, lo guardamos
+            raise ValueError("Los cupos no pueden ser negativos")
+        self._cupos_totales = value
 
-    def actualizar_cupos(self, nuevos_cupos):  # Método para actualizar el número de cupos disponibles
-        if nuevos_cupos < 0: 
-            raise ValueError("Los cupos no pueden ser negativos")  # No se permiten valores negativos
-        self._cupos = nuevos_cupos  # Asignamos el nuevo valor de cupos
-        return f"Cupos actualizados a {self._cupos} para la oferta {self._nombre}"  # Retornamos un mensaje de confirmación
+    # --- OCP: Podemos añadir carreras sin modificar la estructura interna ---
+    def agregar_carrera(self, carrera, area_nombre: str):
+        self._carreras.append(carrera)
+        self._areas.add(area_nombre)
 
-    def obtener_info(self):  # Método que muestra toda la información completa de la oferta académica
-        return f"Oferta {self._nombre} (Código: {self._codigo}) - Carreras: {self._num_carreras}, Áreas: {self._num_areas}, Cupos: {self._cupos} - Estado: {self._estado}"  # Retornamos los datos clave de la oferta
+    @property
+    def num_carreras(self):
+        return len(self._carreras)
 
-    @classmethod
-    def total_ofertas(cls): 
-        return cls._total_ofertas  # Devuelve el número total de ofertas académicas creadas
+    @property
+    def num_areas(self):
+        return len(self._areas)
+
+    def obtener_info(self):
+        return (f"Oferta: {self.nombre} [{self.codigo}]\n"
+                f"Carreras ofertadas: {self.num_carreras}\n"
+                f"Áreas cubiertas: {self.num_areas}\n"
+                f"Cupos disponibles: {self._cupos_totales}")
+
+# --- SRP: Separamos el conteo global a un Gestor de Ofertas ---
+class OfertaManager:
+    def __init__(self):
+        self._ofertas = []
+
+    def registrar_oferta(self, oferta: OfertaAcademica):
+        self._ofertas.append(oferta)
+
+    @property
+    def total_ofertas(self):
+        return len(self._ofertas)
+
+# --- USO DEL SISTEMA (Conectando con lo anterior) ---
+
+# 1. Creamos las carreras (del ejercicio anterior)
+carrera_1 = "Ingeniería de Software" # Simulando el objeto
+carrera_2 = "Ciberseguridad"
+
+# 2. Creamos la oferta
+oferta_2024 = OfertaAcademica("OFER-2024", "Admisiones Segundo Semestre", 500)
+
+# 3. Inyectamos las carreras
+oferta_2024.agregar_carrera(carrera_1, "Tecnología")
+oferta_2024.agregar_carrera(carrera_2, "Tecnología")
+
+# 4. Resultados
+print(oferta_2024.obtener_info())
+print(f"Total de áreas únicas: {oferta_2024.num_areas}")

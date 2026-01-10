@@ -6,7 +6,6 @@ import json
 # Archivos de estudiantes y profesores
 FICHERO_ESTUDIANTES = "estudiantes.json"
 FICHERO_PROFESORES = "profesores.json"
-FICHERO_COPERATIVAS_PROFESORES = "coperativas_profesores.json"
 
 # Carga la lista de usuarios desde un archivo JSON
 def cargar_usuarios(fichero):
@@ -55,52 +54,6 @@ def obtener_profesor(usuario):
             return u
     return None
 
-# Busca si el usuario y contraseña corresponden a un admin de cooperativa
-def buscar_profesor_cooperativa(usuario, contraseña):
-    if not os.path.exists(FICHERO_COPERATIVAS_PROFESORES):
-        return None, None
-    with open(FICHERO_COPERATIVAS_PROFESORES, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    for coop in data:
-        for prof in coop.get("profesores", []):
-            if prof.get("usuario") == usuario and prof.get("contraseña") == contraseña:
-                return prof, coop.get("cooperativa")
-    return None, None
-
-# Lógica de inicio de sesión: verifica credenciales y abre la ventana correspondiente
-def iniciar_sesion(entry_usuario, entry_contraseña, ventana):
-    usuario = entry_usuario.get()
-    contraseña = entry_contraseña.get()
-
-    # Profesor de cooperativa
-    prof_obj, nombre_coop = buscar_profesor_cooperativa(usuario, contraseña)
-    if prof_obj and nombre_coop:
-        from profesores import ventana_gestion_profesor
-        messagebox.showinfo("Bienvenido", f"Bienvenido profesor de {nombre_coop}")
-        ventana.withdraw()
-        ventana_gestion_profesor(prof_obj, nombre_coop)
-        entry_usuario.delete(0, tk.END)
-        entry_contraseña.delete(0, tk.END)
-        return
-
-    # Profesor o estudiante (de los archivos tradicionales)
-    if validar_credenciales(usuario, contraseña):
-        if es_profesor(usuario):
-            from profesores import ventana_gestion_profesor
-            prof_obj = obtener_profesor(usuario)
-            messagebox.showinfo("Bienvenido", "Bienvenido profesor")
-            ventana.withdraw()
-            ventana_gestion_profesor(prof_obj, None)
-        else:
-            from estudiantes import ventana_principal_estudiante
-            estudiante_obj = obtener_estudiante(usuario)
-            messagebox.showinfo("Éxito", f"Bienvenido estudiante: {estudiante_obj.get('cedula', estudiante_obj.get('correo', ''))}")
-            ventana.withdraw()
-            ventana_principal_estudiante(estudiante_obj)
-        entry_usuario.delete(0, tk.END)
-        entry_contraseña.delete(0, tk.END)
-    else:
-        messagebox.showerror("Error", "Usuario o contraseña incorrectos.")
 
 # Abre la ventana para registrar un nuevo usuario
 def abrir_ventana_registro():

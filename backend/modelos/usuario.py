@@ -1,48 +1,68 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base de procesos de admisión
+from enum import Enum
+from abc import ABC
 
-class Usuario(ProcesoAdmision):  # Clase Usuario que hereda de ProcesoAdmision
-    _total_usuarios = 0  # Contador de usuarios creados
+# --- OCP: Definición de Roles Extensible ---
+class RolUsuario(Enum):
+    ESTUDIANTE = "Estudiante"
+    ADMINISTRADOR = "Administrador"
+    DOCENTE = "Docente"  # Fácil de añadir sin tocar lógica compleja
 
-    def __init__(self, codigo, nombre, fecha_inicio, cedula, correo, rol):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Inicializamos atributos heredados
-        self._cedula = cedula  # Guardamos la cédula del usuario
-        self._correo = correo  # Guardamos el correo electrónico
-        self._rol = rol  # Rol del usuario (Estudiante, Administrador, etc.)
-        Usuario._total_usuarios += 1  # Incrementamos el contador de usuarios
+# --- SRP: Clase Base para Entidades Físicas ---
+class Persona(ABC):
+    def __init__(self, cedula: str, nombre: str, correo: str):
+        self.cedula = cedula
+        self.nombre = nombre
+        self.correo = correo
 
-    @property
-    def cedula(self):
-        return self._cedula  # Getter para obtener la cédula
-
-    @cedula.setter
-    def cedula(self, value):  # Setter que valida y asigna la cédula
-        if not value.strip():
-            raise ValueError("La cédula no puede estar vacía")  # Validamos que no esté vacía
-        self._cedula = value  # Asignamos el valor
+# --- SRP: Entidad Usuario enfocada en Identidad ---
+class Usuario(Persona):
+    def __init__(self, codigo: str, nombre: str, cedula: str, correo: str, rol: RolUsuario):
+        super().__init__(cedula, nombre, correo)
+        self.codigo = codigo
+        self.rol = rol
 
     @property
     def correo(self):
-        return self._correo  # Getter para obtener el correo
+        return self._correo
 
     @correo.setter
-    def correo(self, value):  # Setter que valida y asigna el correo
-        if not value.strip():
-            raise ValueError("El correo no puede estar vacío")  # Evita que quede vacío
-        self._correo = value  # Asignamos el correo
+    def correo(self, value):
+        if "@" not in value: # Validación básica (podría ser un validador externo)
+            raise ValueError("Formato de correo inválido")
+        self._correo = value
+
+    def obtener_info(self):
+        return (f"Usuario: {self.nombre} (ID: {self.codigo})\n"
+                f"Cédula: {self.cedula} | Rol: {self.rol.value}")
+
+# --- SRP: Gestor de Usuarios (Repository Pattern) ---
+class UsuarioRepository:
+    def __init__(self):
+        self._usuarios = []
+
+    def registrar_usuario(self, usuario: Usuario):
+        self._usuarios.append(usuario)
+        print(f"Sistema: Usuario '{usuario.nombre}' registrado con éxito.")
 
     @property
-    def rol(self): 
-        return self._rol  # Getter para obtener el rol del usuario
+    def total(self):
+        return len(self._usuarios)
 
-    @rol.setter
-    def rol(self, value):  # Setter que valida y asigna el rol
-        if value not in ["Estudiante", "Administrador"]: 
-            raise ValueError("Rol no válido")  # Solo permite valores válidos
-        self._rol = value  # Guardamos el rol
+# --- USO DEL SISTEMA ---
 
-    def obtener_info(self):  # Método que devuelve toda la información del usuario
-        return f"Usuario {self._nombre} (Código: {self._codigo}, Cédula: {self._cedula}) - Correo: {self._correo}, Rol: {self._rol} - Estado: {self._estado}"  # Info completa
+repo = UsuarioRepository()
 
-    @classmethod
-    def total_usuarios(cls):
-        return cls._total_usuarios  # Devuelve el total de usuarios creados
+# Creación de usuario usando el Enum de Roles
+nuevo_usuario = Usuario(
+    codigo="USR-100",
+    nombre="Ana Martínez",
+    cedula="0987654321",
+    correo="ana.mtz@universidad.edu",
+    rol=RolUsuario.ADMINISTRADOR
+)
+
+repo.registrar_usuario(nuevo_usuario)
+
+print("-" * 30)
+print(nuevo_usuario.obtener_info())
+print(f"Total de usuarios en base de datos: {repo.total}")

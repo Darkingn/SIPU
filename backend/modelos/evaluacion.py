@@ -1,82 +1,68 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base que gestiona el proceso de admisión
+from enum import Enum
 
-class Evaluacion(ProcesoAdmision):  # Creamos la clase Evaluacion que hereda de ProcesoAdmision
-    _total_evaluaciones = 0  # Contador para saber cuántas evaluaciones se han creado en total
+# --- SRP: Definimos los estados de forma clara ---
+class EstadoEvaluacion(Enum):
+    PROGRAMADA = "Programada"
+    EN_CURSO = "En curso"
+    FINALIZADA = "Finalizada"
 
-    def __init__(self, codigo, nombre, fecha_inicio, fecha, hora, sala, duracion, tipo):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Llamamos al constructor del padre para inicializar datos comunes
-        self._fecha = fecha  # Guardamos la fecha en la que se realizará la evaluación
-        self._hora = hora  # Guardamos la hora de inicio de la evaluación
-        self._sala = sala  # Asignamos la sala o aula donde se llevará a cabo
-        self._duracion = duracion  # Indicamos cuántas horas durará la evaluación
-        self._tipo = tipo  # Definimos el tipo de evaluación (por ejemplo, examen, entrevista, etc.)
-        Evaluacion._total_evaluaciones += 1  # Cada vez que se crea una evaluación, aumentamos el contador total
+# --- SRP: La clase Evaluacion es ahora una Entidad pura ---
+class Evaluacion:
+    def __init__(self, codigo, nombre, fecha, hora, sala, duracion, tipo):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.fecha = fecha
+        self.hora = hora
+        self.sala = sala
+        self.duracion = duracion
+        self.tipo = tipo
+        self.estado = EstadoEvaluacion.PROGRAMADA
 
-    @property
-    def fecha(self):
-        return self._fecha  # Retorna la fecha de la evaluación
+    def obtener_info(self):
+        return (f"[{self.tipo}] {self.nombre} (Cod: {self.codigo}) - "
+                f"Lugar: {self.sala} a las {self.hora} - Estado: {self.estado.value}")
 
-    @fecha.setter
-    def fecha(self, value):
-        if not value.strip():
-            raise ValueError("La fecha no puede estar vacía")  # Validamos que la fecha no venga vacía
-        self._fecha = value  # Si es válida, la guardamos
+# --- SRP & DIP: El Gestor se encarga de la lógica de negocio ---
+class EvaluacionManager:
+    """Clase responsable de controlar el flujo y el conteo de evaluaciones."""
+    def __init__(self):
+        self._evaluaciones = []
 
-    @property
-    def hora(self): 
-        return self._hora  # Devuelve la hora de inicio de la evaluación
+    def registrar_evaluacion(self, evaluacion: Evaluacion):
+        self._evaluaciones.append(evaluacion)
 
-    @hora.setter
-    def hora(self, value):
-        if not value.strip():
-            raise ValueError("La hora no puede estar vacía")  # Validamos que la hora esté definida
-        self._hora = value  # Si es válida, la asignamos
+    def iniciar(self, evaluacion: Evaluacion):
+        if evaluacion.estado == EstadoEvaluacion.PROGRAMADA:
+            evaluacion.estado = EstadoEvaluacion.EN_CURSO
+            return f"Evaluación {evaluacion.nombre} iniciada en sala {evaluacion.sala}."
+        raise ValueError("La evaluación no se puede iniciar (debe estar Programada).")
 
-    @property
-    def sala(self):
-        return self._sala  # Devuelve la sala asignada para la evaluación
-
-    @sala.setter
-    def sala(self, value):
-        if not value.strip(): 
-            raise ValueError("La sala no puede estar vacía")  # Validamos que no esté vacía
-        self._sala = value  # Guardamos la sala si pasa la validación
-
-    @property
-    def duracion(self): 
-        return self._duracion  # Devuelve la duración de la evaluación
-
-    @duracion.setter
-    def duracion(self, value):
-        if value <= 0: 
-            raise ValueError("La duración debe ser mayor a 0")  # Validamos que la duración sea positiva
-        self._duracion = value  # Si es válida, la guardamos
+    def finalizar(self, evaluacion: Evaluacion):
+        if evaluacion.estado == EstadoEvaluacion.EN_CURSO:
+            evaluacion.estado = EstadoEvaluacion.FINALIZADA
+            return f"Evaluación {evaluacion.nombre} finalizada."
+        raise ValueError("No se puede finalizar una evaluación que no esté en curso.")
 
     @property
-    def tipo(self): 
-        return self._tipo  # Retorna el tipo de evaluación
+    def total_evaluaciones(self):
+        return len(self._evaluaciones)
 
-    @tipo.setter
-    def tipo(self, value):
-        if not value.strip(): 
-            raise ValueError("El tipo no puede estar vacío")  # Validamos que el tipo esté definido
-        self._tipo = value  # Si es válido, lo guardamos
+# --- USO DEL SISTEMA ---
 
-    def iniciar_evaluacion(self):  # Método para cambiar el estado a "En curso"
-        if self._estado == "Iniciado":  # Solo puede iniciarse si el estado actual es "Iniciado"
-            self._estado = "En curso"  # Cambiamos el estado
-            return f"Evaluación {self._nombre} en {self._sala} iniciada"  # Retornamos un mensaje informativo
-        raise ValueError("La evaluación no está en estado 'Iniciado'")  # Si no cumple, lanzamos un error
+manager = EvaluacionManager()
 
-    def finalizar_evaluacion(self):  # Método para finalizar la evaluación
-        if self._estado == "En curso":  # Solo puede finalizar si está en curso
-            self._estado = "Finalizada"  # Cambiamos el estado a finalizada
-            return f"Evaluación {self._nombre} en {self._sala} finalizada"  # Mensaje confirmando la finalización
-        raise ValueError("La evaluación no está en estado 'En curso'")  # Si no está en curso, lanzamos un error
+# Creamos la evaluación (ya no hereda de ProcesoAdmision)
+examen_mate = Evaluacion(
+    "MAT01", "Examen de Matemáticas", "2024-05-20", 
+    "09:00", "Sala A-12", 2, "Escrito"
+)
 
-    def obtener_info(self):  # Método para mostrar toda la información de la evaluación
-        return f"Evaluación {self._nombre} (Código: {self._codigo}) - {self._tipo} - Fecha: {self._fecha}, Hora: {self._hora}, Sala: {self._sala}, Duración: {self._duracion}h - Estado: {self._estado}"  # Devolvemos los datos completos
+manager.registrar_evaluacion(examen_mate)
 
-    @classmethod
-    def total_evaluaciones(cls): 
-        return cls._total_evaluaciones  # Devuelve cuántas evaluaciones se han creado en total
+# Control de flujo a través del Manager
+print(examen_mate.obtener_info())
+print(manager.iniciar(examen_mate))
+print(examen_mate.obtener_info())
+print(manager.finalizar(examen_mate))
+
+print(f"Total evaluaciones registradas: {manager.total_evaluaciones}")

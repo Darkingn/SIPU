@@ -1,35 +1,60 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base que maneja el proceso de admisión
+from abc import ABC, abstractmethod
 
-class Carrera(ProcesoAdmision):  # Definimos la clase Carrera que hereda de ProcesoAdmision
-    _total_carreras = 0  # Contador general para saber cuántas carreras se han creado
+# --- OCP: Definimos las modalidades de forma extensible ---
+class Modalidad:
+    PRESENCIAL = "Presencial"
+    VIRTUAL = "Virtual"
+    HIBRIDA = "Híbrida"
+    # Ahora es fácil añadir: DUAL = "Dual"
 
-    def __init__(self, codigo, nombre, fecha_inicio, duracion, modalidad):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Llamamos al constructor del padre para inicializar los datos comunes
-        self._duracion = duracion  # Guardamos la duración de la carrera (por ejemplo, en semestres)
-        self._modalidad = modalidad  # Definimos la modalidad: presencial, virtual o híbrida
-        Carrera._total_carreras += 1  # Cada vez que se crea una carrera, aumentamos el contador total
+# --- SRP: La clase Carrera solo representa los DATOS de una carrera ---
+class Carrera:
+    def __init__(self, codigo, nombre, duracion, modalidad: str):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.duracion = duracion
+        self.modalidad = modalidad
 
     @property
-    def duracion(self): 
-        return self._duracion  # Devuelve la duración actual de la carrera
+    def duracion(self):
+        return self._duracion
 
     @duracion.setter
     def duracion(self, value):
-        if value <= 0: raise ValueError("La duración debe ser mayor a 0")  # Validamos que la duración no sea cero ni negativa
-        self._duracion = value  # Si es válida, la actualizamos
+        if value <= 0: 
+            raise ValueError("La duración debe ser mayor a 0")
+        self._duracion = value
+
+    def obtener_info(self):
+        return (f"Carrera {self.nombre} (ID: {self.codigo}) - "
+                f"Duración: {self.duracion} semestres, Modalidad: {self.modalidad}")
+
+# --- SRP: Separamos la gestión (contador) en un Repositorio o Manager ---
+class CarreraRepository:
+    def __init__(self):
+        self._carreras = []
+
+    def registrar_carrera(self, carrera: Carrera):
+        # Aquí podrías añadir lógica para no repetir códigos
+        self._carreras.append(carrera)
+        print(f"Carrera '{carrera.nombre}' registrada exitosamente.")
 
     @property
-    def modalidad(self): 
-        return self._modalidad  # Retorna la modalidad actual de la carrera
+    def total_carreras(self):
+        return len(self._carreras)
 
-    @modalidad.setter
-    def modalidad(self, value):
-        if value not in ["Presencial", "Virtual", "Híbrida"]: raise ValueError("Modalidad no válida")  # Solo se permiten estas tres modalidades
-        self._modalidad = value  # Si pasa la validación, la asignamos
+# --- USO DEL SISTEMA ---
 
-    def obtener_info(self):  # Método que muestra toda la información de la carrera
-        return f"Carrera {self._nombre} (Código: {self._codigo}) - Duración: {self._duracion} semestres, Modalidad: {self._modalidad} - Estado: {self._estado}"  # Retornamos un texto con los datos completos
+# 1. Creamos el gestor
+repo = CarreraRepository()
 
-    @classmethod
-    def total_carreras(cls): 
-        return cls._total_carreras  # Devuelve cuántas carreras se han creado en total
+# 2. Creamos instancias de carrera (Sin heredar de ProcesoAdmision)
+software = Carrera("SOFT01", "Ingeniería de Software", 10, Modalidad.PRESENCIAL)
+derecho = Carrera("DER02", "Derecho", 9, Modalidad.VIRTUAL)
+
+# 3. Las registramos
+repo.registrar_carrera(software)
+repo.registrar_carrera(derecho)
+
+print(f"Total de carreras en el sistema: {repo.total_carreras}")
+print(software.obtener_info())

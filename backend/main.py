@@ -9,6 +9,7 @@ app = FastAPI(
 
 
 
+
 @app.get("/")
 def health_check():
     return {"estado": "API activa"}

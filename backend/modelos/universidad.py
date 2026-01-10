@@ -1,74 +1,79 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base de procesos de admisión
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Dict
 
-class Universidad(ProcesoAdmision):  # Clase Universidad que hereda de ProcesoAdmision
-    _total_universidades = 0  # Contador de universidades creadas
+# --- OCP: Definimos Tipos de Universidad como Enum ---
+class TipoUniversidad(Enum):
+    PUBLICA = "Pública"
+    PRIVADA = "Privada"
+    COFINANCIADA = "Cofinanciada"
 
-    def __init__(self, codigo, nombre, fecha_inicio, tipo, ubicacion, sedes):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Inicializamos atributos de la clase padre
-        self._tipo = tipo  # Tipo de universidad (Pública o Privada)
-        self._ubicacion = ubicacion  # Ubicación principal de la universidad
-        self._sedes = sedes if isinstance(sedes, list) else [sedes]  # Lista de sedes; si viene una sola, la convertimos en lista
-        self._inscripciones_abiertas = {sede: False for sede in self._sedes}  # Estado de inscripciones por sede, inicialmente cerradas
-        Universidad._total_universidades += 1  # Incrementamos el contador total de universidades
+# --- SRP: Clase dedicada a gestionar una Sede y su estado ---
+class Sede:
+    def __init__(self, nombre: str):
+        self.nombre = nombre
+        self.inscripciones_abiertas = False
+
+    def abrir_inscripcion(self):
+        self.inscripciones_abiertas = True
+
+    def cerrar_inscripcion(self):
+        self.inscripciones_abiertas = False
+
+# --- SRP: La clase Universidad como Entidad Administrativa ---
+class Universidad:
+    def __init__(self, codigo: str, nombre: str, tipo: TipoUniversidad, ubicacion: str):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.tipo = tipo
+        self.ubicacion = ubicacion
+        self._sedes: Dict[str, Sede] = {}
+
+    def agregar_sedes(self, nombres_sedes: List[str]):
+        for nombre in nombres_sedes:
+            self._sedes[nombre] = Sede(nombre)
+
+    # Fachada para gestionar inscripciones (Delegación)
+    def gestionar_inscripciones_sede(self, nombre_sede: str, abrir: bool):
+        sede = self._sedes.get(nombre_sede)
+        if not sede:
+            raise ValueError(f"La sede '{nombre_sede}' no existe.")
+        
+        if abrir:
+            sede.abrir_inscripcion()
+        else:
+            sede.cerrar_inscripcion()
+
+    def obtener_info(self):
+        sedes_str = ", ".join([s.nombre for s in self._sedes.values()])
+        return (f"Universidad: {self.nombre} ({self.tipo.value})\n"
+                f"Ubicación Principal: {self.ubicacion}\n"
+                f"Sedes: {sedes_str}")
+
+# --- SRP: Repositorio para contabilidad global ---
+class UniversidadRepository:
+    def __init__(self):
+        self._universidades = []
+
+    def registrar(self, universidad: Universidad):
+        self._universidades.append(universidad)
 
     @property
-    def tipo(self): 
-        return self._tipo  # Getter para obtener el tipo de universidad
+    def total(self):
+        return len(self._universidades)
 
-    @tipo.setter
-    def tipo(self, value):  # Setter que valida y asigna el tipo
-        if value not in ["Pública", "Privada"]:
-            raise ValueError("Tipo no válido")  # Solo permite Pública o Privada
-        self._tipo = value  # Asigna el valor validado
+# --- USO DEL SISTEMA ---
 
-    @property
-    def ubicacion(self): 
-        return self._ubicacion  # Getter para obtener la ubicación
+repo = UniversidadRepository()
 
-    @ubicacion.setter
-    def ubicacion(self, value):  # Setter que valida y asigna la ubicación
-        if not value.strip():
-            raise ValueError("La ubicación no puede estar vacía")  # Validamos que no esté vacía
-        self._ubicacion = value  # Asignamos el valor
+# Creamos la universidad
+uce = Universidad("UCE-001", "Univ. Central", TipoUniversidad.PUBLICA, "Quito")
+uce.agregar_sedes(["Quito", "Santo Domingo"])
 
-    @property
-    def sedes(self):
-        return self._sedes  # Getter para obtener la lista de sedes
+# Operamos sobre una sede específica
+uce.gestionar_inscripciones_sede("Quito", abrir=True)
 
-    @sedes.setter
-    def sedes(self, value):  # Setter que valida y asigna las sedes
-        if not isinstance(value, list):
-            raise ValueError("Las sedes deben ser una lista")  # Validamos que sea lista
-        self._sedes = value  # Asignamos la lista de sedes
-        self._inscripciones_abiertas = {sede: False for sede in self._sedes}  # Inicializamos inscripciones cerradas por cada sede
+repo.registrar(uce)
 
-    def abrir_inscripciones(self, sede=None):  # Método para abrir inscripciones en una o todas las sedes
-        if sede:  # Si se especifica una sede
-            if sede in self._sedes:  # Verificamos que exista la sede
-                if not self._inscripciones_abiertas[sede]:  # Solo si no están abiertas
-                    self._inscripciones_abiertas[sede] = True  # Abrimos las inscripciones
-                    return f"Inscripciones abiertas en {sede} ({self._nombre})"  # Mensaje de confirmación
-                raise ValueError("Las inscripciones ya están abiertas en esta sede")  # Error si ya estaban abiertas
-            raise ValueError("Sede no encontrada")  # Error si la sede no existe
-        for s in self._sedes:  # Si no se especifica sede, abrimos todas
-            self._inscripciones_abiertas[s] = True
-        return f"Inscripciones abiertas en todas las sedes de {self._nombre}"  # Mensaje general
-
-    def cerrar_inscripciones(self, sede=None):  # Método para cerrar inscripciones en una o todas las sedes
-        if sede:  # Si se especifica una sede
-            if sede in self._sedes:  # Verificamos que exista
-                if self._inscripciones_abiertas[sede]:  # Solo si estaban abiertas
-                    self._inscripciones_abiertas[sede] = False  # Cerramos las inscripciones
-                    return f"Inscripciones cerradas en {sede} ({self._nombre})"  # Mensaje de confirmación
-                raise ValueError("Las inscripciones ya están cerradas en esta sede")  # Error si ya estaban cerradas
-            raise ValueError("Sede no encontrada")  # Error si la sede no existe
-        for s in self._sedes:  # Si no se especifica sede, cerramos todas
-            self._inscripciones_abiertas[s] = False
-        return f"Inscripciones cerradas en todas las sedes de {self._nombre}"  # Mensaje general
-
-    def obtener_info(self):  # Método para mostrar información completa de la universidad
-        return f"Universidad {self._nombre} (Código: {self._codigo}) - Tipo: {self._tipo}, Ubicación: {self._ubicacion}, Sedes: {', '.join(self._sedes)} - Estado: {self._estado}"  # Devuelve info formateada
-
-    @classmethod
-    def total_universidades(cls):
-        return cls._total_universidades  # Método de clase que devuelve total de universidades creada
+print(uce.obtener_info())
+print(f"Estado inscripción Quito: {uce._sedes['Quito'].inscripciones_abiertas}")

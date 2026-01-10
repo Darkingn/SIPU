@@ -1,71 +1,65 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 
-#clase abstracta para los aspirantes
+class GrupoPrioridad(Enum):
+    GENERAL = "Bachilleres General"
+    GAR = "Grupo de Alto Rendimiento"
+    VULNERABILIDAD = "Situación de Vulnerabilidad"
+    PUEBLOS = "Pueblos y Nacionalidades"
+    FRONTERA = "Zona de Frontera"
 
 class Aspirante(ABC):
-    def __init__(self, nombre, cedula, carrera):
-        self.nombre = nombre
+    def __init__(self, cedula, nombre, correo, p_examen, p_bachiller, grupo: GrupoPrioridad):
         self.cedula = cedula
-        self.carrera = carrera
+        self.nombre = nombre
+        self.correo = correo
+        self.p_examen = p_examen
+        self.p_bachiller = p_bachiller
+        self.grupo = grupo
+        self.puntos_adicionales = 0
 
     @abstractmethod
-    def validar_requisitos(self):
+    def calcular_puntaje_final(self):
+        """Cada tipo de aspirante define cómo se suman sus puntos extra."""
         pass
 
-#clases concretas de aspirantes
+    def get_data_for_supabase(self):
+        """Prepara el diccionario para insertar en la base de datos."""
+        return {
+            "cedula": self.cedula,
+            "nombre": self.nombre,
+            "correo": self.correo,
+            "tipo_aspirante": self.grupo.value,
+            "puntaje_examen": self.p_examen,
+            "puntaje_bachiller": self.p_bachiller,
+            "puntaje_final": self.calcular_puntaje_final()
+        }
 
-class AspiranteNuevo(Aspirante):
-    def validar_requisitos(self):
-        return bool(self.cedula and self.carrera)
+# --- Implementación de Tipos Específicos ---
 
-class AspiranteTraslado(Aspirante):
-    def __init__(self, nombre, cedula, carrera, universidad_origen):
-        super().__init__(nombre, cedula, carrera)
-        self.universidad_origen = universidad_origen
+class AspiranteGAR(Aspirante):
+    """Grupo de Alto Rendimiento: Los mejores puntuados."""
+    def calcular_puntaje_final(self):
+        # El GAR suele postular con su nota pura, pero tiene prioridad de cupo
+        return (self.p_examen * 0.5) + (self.p_bachiller * 0.5)
 
-    def validar_requisitos(self):
-        return bool(self.cedula and self.carrera and self.universidad_origen)
+class AspiranteVulnerable(Aspirante):
+    """Personas en condiciones socioeconómicas críticas (+15 a +45 puntos)."""
+    def __init__(self, cedula, nombre, correo, p_examen, p_bachiller, puntos_bono):
+        super().__init__(cedula, nombre, correo, p_examen, p_bachiller, GrupoPrioridad.VULNERABILIDAD)
+        self.puntos_adicionales = puntos_bono
 
-#fabrica para crear aspirantes
+    def calcular_puntaje_final(self):
+        base = (self.p_examen * 0.5) + (self.p_bachiller * 0.5)
+        return base + self.puntos_adicionales
 
-class AspiranteFactory:
-    @staticmethod
-    def crear_aspirante(tipo, **datos):
-        if tipo == "nuevo":
-            return AspiranteNuevo(
-                datos["nombre"], datos["cedula"], datos["carrera"]
-            )
-        elif tipo == "traslado":
-            return AspiranteTraslado(
-                datos["nombre"], datos["cedula"],
-                datos["carrera"], datos["universidad_origen"]
-            )
-        else:
-            raise ValueError("Tipo de admisión no válido")
+class AspiranteEscolar(Aspirante):
+    """Estudiantes de último año (Régimen Costa/Sierra)."""
+    def calcular_puntaje_final(self):
+        return (self.p_examen * 0.5) + (self.p_bachiller * 0.5)
 
-#uso del patron factory method
-
-aspirante = AspiranteFactory.crear_aspirante(
-    "traslado",
-    nombre="Ana",
-    cedula="0102030405",
-    carrera="Ingeniería",
-    universidad_origen="UCE"
-)
-
-aspirante1 = AspiranteFactory.crear_aspirante(
-    "nuevo",
-    nombre="leo",
-    cedula="0102030405",
-    carrera=""
-)
-
-if aspirante.validar_requisitos():
-    print("Aspirante aceptado para evaluación")
-else:
-    print("Requisitos incompletos")
-
-if aspirante1.validar_requisitos():
-    print("Aspirante aceptado para evaluación")
-else:
-    print("Requisitos incompletos")
+class AspiranteEtnia(Aspirante):
+    """Acción afirmativa por Pueblos y Nacionalidades (+10 puntos)."""
+    def calcular_puntaje_final(self):
+        base = (self.p_examen * 0.5) + (self.p_bachiller * 0.5)
+        return base + 10

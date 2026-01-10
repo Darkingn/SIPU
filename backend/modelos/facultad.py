@@ -1,58 +1,68 @@
-from proceso_admision import ProcesoAdmision  # Importamos la clase base que maneja los procesos de admisión
+# --- SRP: Clase separada para gestionar Recursos Físicos ---
+class InventarioRecursos:
+    def __init__(self, laboratorios=0, computadoras=0):
+        self.laboratorios = laboratorios
+        self.computadoras = computadoras
 
-class Facultad(ProcesoAdmision):  # Creamos la clase Facultad que hereda de ProcesoAdmision
-    _total_facultades = 0  # Contador general para saber cuántas facultades se han creado
+    def agregar_laboratorio(self):
+        self.laboratorios += 1
 
-    def __init__(self, codigo, nombre, fecha_inicio, decano):
-        super().__init__(codigo, nombre, fecha_inicio, "Sistema")  # Llamamos al constructor del padre para inicializar los atributos comunes
-        self._decano = decano  # Asignamos el nombre del decano a cargo de la facultad
-        self._laboratorios = 0  # Inicializamos el número de laboratorios en 0
-        self._computadoras = 0  # Inicializamos el número de computadoras en 0
-        Facultad._total_facultades += 1  # Cada vez que se crea una facultad, aumentamos el contador total
+    def agregar_computadoras(self, cantidad):
+        if cantidad < 0:
+            raise ValueError("La cantidad no puede ser negativa")
+        self.computadoras += cantidad
+
+# --- SRP: La clase Facultad solo representa la entidad administrativa ---
+class Facultad:
+    def __init__(self, codigo, nombre, decano, recursos: InventarioRecursos = None):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.decano = decano
+        # DIP: Dependemos de una abstracción de recursos (Composición)
+        self.recursos = recursos if recursos else InventarioRecursos()
 
     @property
-    def decano(self): 
-        return self._decano  # Devuelve el nombre del decano actual de la facultad
+    def decano(self):
+        return self._decano
 
     @decano.setter
     def decano(self, value):
-        if not value.strip():
-            raise ValueError("El decano no puede estar vacío")  # Validamos que el nombre del decano no esté vacío
-        self._decano = value  # Si es válido, lo guardamos
+        if not value or not value.strip():
+            raise ValueError("El decano no puede estar vacío")
+        self._decano = value
+
+    def obtener_info(self):
+        return (f"Facultad: {self.nombre} (ID: {self.codigo})\n"
+                f"Decano: {self.decano}\n"
+                f"Infraestructura: {self.recursos.laboratorios} Labs, "
+                f"{self.recursos.computadoras} Computadoras")
+
+# --- SRP: Gestión global de facultades (Repositorio) ---
+class FacultadRepository:
+    def __init__(self):
+        self._facultades = []
+
+    def registrar(self, facultad: Facultad):
+        self._facultades.append(facultad)
+        print(f"Facultad '{facultad.nombre}' registrada.")
 
     @property
-    def laboratorios(self): 
-        return self._laboratorios  # Devuelve la cantidad actual de laboratorios
+    def total(self):
+        return len(self._facultades)
 
-    @laboratorios.setter
-    def laboratorios(self, value):
-        if value < 0:
-            raise ValueError("El número de laboratorios no puede ser negativo")  # No se permiten valores negativos
-        self._laboratorios = value  # Si es válido, lo asignamos
+# --- USO DEL SISTEMA ---
 
-    @property
-    def computadoras(self): 
-        return self._computadoras  # Devuelve la cantidad actual de computadoras
+# 1. Creamos el gestor y los recursos
+repo = FacultadRepository()
+recursos_sistemas = InventarioRecursos(laboratorios=5, computadoras=150)
 
-    @computadoras.setter
-    def computadoras(self, value):
-        if value < 0: 
-            raise ValueError("El número de computadoras no puede ser negativo")  # Validamos que no sea negativo
-        self._computadoras = value  # Si pasa la validación, lo guardamos
+# 2. Creamos la facultad inyectando sus dependencias
+facultad_sistemas = Facultad("FISE", "Ingeniería en Sistemas", "Ing. Juan Pérez", recursos_sistemas)
 
-    def agregar_laboratorio(self):  # Método para añadir un nuevo laboratorio a la facultad
-        self._laboratorios += 1  # Sumamos uno al número actual de laboratorios
-        return f"Laboratorio añadido a la facultad {self._nombre}"  # Retornamos un mensaje confirmando la acción
+# 3. Operamos de forma limpia
+facultad_sistemas.recursos.agregar_computadoras(20)
+repo.registrar(facultad_sistemas)
 
-    def agregar_computadoras(self, cantidad):  # Método para añadir una cantidad específica de computadoras
-        if cantidad < 0: 
-            raise ValueError("La cantidad no puede ser negativa")  # Validamos que la cantidad sea positiva
-        self._computadoras += cantidad  # Sumamos la cantidad de computadoras al total existente
-        return f"{cantidad} computadoras añadidas a la facultad {self._nombre}"  # Retornamos un mensaje de confirmación
-
-    def obtener_info(self):  # Método que devuelve un resumen completo de la facultad
-        return f"Facultad {self._nombre} (Código: {self._codigo}) - Decano: {self._decano}, Laboratorios: {self._laboratorios}, Computadoras: {self._computadoras} - Estado: {self._estado}"  # Mostramos toda la información clave de la facultad
-
-    @classmethod
-    def total_facultades(cls): 
-        return cls._total_facultades  # Devuelve cuántas facultades se han creado en total
+print("-" * 30)
+print(facultad_sistemas.obtener_info())
+print(f"Total facultades en el sistema: {repo.total}")
