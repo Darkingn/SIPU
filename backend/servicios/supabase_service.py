@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, Iterable, Optional
 
-from .supabase_client import get_supabase_client
+from backend.servicios.supabase_client import get_supabase_client
 from utils.error_handler import DatabaseError
 
 
@@ -22,10 +22,10 @@ class SupabaseService:
             cls._instance = super().__new__(cls)
             try:
                 cls._client = get_supabase_client()
-                logging.info("Cliente de Supabase inicializado correctamente")
-            except RuntimeError as e:
-                logging.error("Error al inicializar el cliente de Supabase: %s", e)
-                raise DatabaseError("No se pudo conectar a la base de datos") from e
+                logging.info("Supabase client initialized successfully")
+            except Exception as e:
+                logging.error(f"Error initializing Supabase client: {e}")
+                raise DatabaseError("Could not connect to database")
         return cls._instance
 
     @property
@@ -38,9 +38,9 @@ class SupabaseService:
         """Ejecuta una función pasando el cliente con manejo de errores."""
         try:
             return query_func(self.client)
-        except Exception as exc:
-            logging.error("Error de la base de datos: %s", exc)
-            raise DatabaseError(str(exc)) from exc
+        except Exception as e:
+            logging.error(f"Database error: {e}")
+            raise DatabaseError(str(e))
 
     def health_check(self) -> bool:
         """Realiza una consulta sencilla para verificar la conexión."""
@@ -49,8 +49,8 @@ class SupabaseService:
             # la tabla, la llamada fallará y se reportará como no saludable.
             self.client.table("aspirantes").select("id").limit(1).execute()
             return True
-        except Exception as exc:  # pylint: disable=broad-except
-            logging.error("La comprobación de salud de la base de datos falló: %s", exc)
+        except Exception as e:
+            logging.error(f"Database health check failed: {e}")
             return False
 
     # --- Operaciones CRUD genéricas ---
@@ -76,17 +76,17 @@ class SupabaseService:
             if offset:
                 q = q.range(offset, (offset or 0) + (limit or 100) - 1) if limit else q
             return q.execute()
-        except Exception as exc:
-            logging.error("Error al seleccionar en %s: %s", table, exc)
-            raise DatabaseError(str(exc)) from exc
+        except Exception as e:
+            logging.error(f"Select error on {table}: {e}")
+            raise DatabaseError(str(e))
 
     def insert(self, table: str, records: Iterable[Dict[str, Any]]) -> Any:
         """Inserta uno o varios registros en `table`."""
         try:
             return self.client.table(table).insert(list(records)).execute()
-        except Exception as exc:
-            logging.error("Error al insertar en %s: %s", table, exc)
-            raise DatabaseError(str(exc)) from exc
+        except Exception as e:
+            logging.error(f"Insert error on {table}: {e}")
+            raise DatabaseError(str(e))
 
     def update(self, table: str, filters: Dict[str, Any], data: Dict[str, Any]) -> Any:
         """Actualiza filas en `table` que cumplan `filters` (dict de eq)."""
@@ -95,9 +95,9 @@ class SupabaseService:
             for col, val in filters.items():
                 q = q.eq(col, val)
             return q.execute()
-        except Exception as exc:
-            logging.error("Error al actualizar en %s: %s", table, exc)
-            raise DatabaseError(str(exc)) from exc
+        except Exception as e:
+            logging.error(f"Update error on {table}: {e}")
+            raise DatabaseError(str(e))
 
     def delete(self, table: str, filters: Dict[str, Any]) -> Any:
         """Elimina filas en `table` que cumplan `filters` (dict de eq)."""
@@ -106,9 +106,18 @@ class SupabaseService:
             for col, val in filters.items():
                 q = q.eq(col, val)
             return q.execute()
-        except Exception as exc:
-            logging.error("Error al eliminar en %s: %s", table, exc)
-            raise DatabaseError(str(exc)) from exc
+        except Exception as e:
+            logging.error(f"Delete error on {table}: {e}")
+            raise DatabaseError(str(e))
 
 
 __all__ = ["SupabaseService"]
+
+def main():
+    client = get_supabase_client(use_service_role=True)  # True si quieres usar service role
+    # Intenta leer alguna tabla (ajusta el nombre a tu esquema)
+    resp = client.table("aspirantes").select("*").limit(1).execute()
+    print("Respuesta:", resp)
+
+if __name__ == "__main__":
+    main()

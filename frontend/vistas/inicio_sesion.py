@@ -55,6 +55,27 @@ def obtener_profesor(usuario):
     return None
 
 
+# Función para iniciar sesión
+def iniciar_sesion(entry_usuario, entry_contraseña, ventana):
+    """Valida las credenciales y abre la interfaz correspondiente."""
+    usuario = entry_usuario.get().strip()
+    contraseña = entry_contraseña.get().strip()
+    
+    if not usuario or not contraseña:
+        messagebox.showerror("Error", "Por favor, ingresa usuario y contraseña.")
+        return
+    
+    if validar_credenciales(usuario, contraseña):
+        if es_profesor(usuario):
+            messagebox.showinfo("Éxito", f"Bienvenido profesor: {usuario}")
+            # Aquí puedes abrir la interfaz de profesores
+        else:
+            messagebox.showinfo("Éxito", f"Bienvenido estudiante: {usuario}")
+            # Aquí puedes abrir la interfaz de estudiantes
+    else:
+        messagebox.showerror("Error", "Usuario o contraseña incorrectos.")
+
+
 # Abre la ventana para registrar un nuevo usuario
 def abrir_ventana_registro():
     ventana_registro = tk.Toplevel()

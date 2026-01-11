@@ -51,6 +51,11 @@ def get_supabase_keys() -> Tuple[Optional[str], Optional[str], Optional[str]]:
     url = _get_env_value("SUPABASE_URL")
     service_key = _get_env_value("SUPABASE_SERVICE_ROLE_KEY")
     anon_key = _get_env_value("SUPABASE_ANON_KEY") or _get_env_value("SUPABASE_KEY")
+
+    logging.info(f"DEBUG: SUPABASE_URL={url}")
+    logging.info(f"DEBUG: SUPABASE_SERVICE_ROLE_KEY={'*' * len(service_key) if service_key else 'None'}")
+    logging.info(f"DEBUG: SUPABASE_ANON_KEY={'*' * len(anon_key) if anon_key else 'None'}")
+
     return url, service_key, anon_key
 
 

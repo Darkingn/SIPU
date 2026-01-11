@@ -1,99 +1,99 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List
-
-# =====================================================
-# MODELO DE DOMINIO
-# =====================================================
-
-class Carrera:
-    def __init__(self, codigo: str, nombre: str, area: str, cupos: int):
-        self.codigo = codigo
-        self.nombre = nombre
-        self.area = area
-        self.cupos = cupos
-
-    def obtener_info(self):
-        return {
-            "codigo": self.codigo,
-            "nombre": self.nombre,
-            "area": self.area,
-            "cupos": self.cupos
-        }
+from typing import List, Optional
+from backend.servicios.supabase_service import SupabaseService
 
 
 # =====================================================
 # SCHEMAS
 # =====================================================
 
-class CarreraCreateSchema(BaseModel):
+class CarreraCreate(BaseModel):
     codigo: str
     nombre: str
-    area: str
-    cupos: int
+    duracion: int
+    modalidad: str
 
 
-class CarreraResponseSchema(BaseModel):
+class CarreraResponse(BaseModel):
+    id: Optional[int] = None
     codigo: str
     nombre: str
-    area: str
-    cupos: int
+    duracion: int
+    modalidad: str
+
+
+class CarreraUpdate(BaseModel):
+    nombre: Optional[str] = None
+    duracion: Optional[int] = None
+    modalidad: Optional[str] = None
 
 
 # =====================================================
-# REPOSITORIO SIMPLE
+# ROUTER
 # =====================================================
 
-class CarreraRepository:
-    def __init__(self):
-        self._carreras = {}
-
-    def guardar(self, carrera: Carrera):
-        if carrera.codigo in self._carreras:
-            raise ValueError("La carrera ya existe")
-        self._carreras[carrera.codigo] = carrera
-
-    def listar(self):
-        return list(self._carreras.values())
-
-    def obtener(self, codigo: str):
-        return self._carreras.get(codigo)
+router = APIRouter(prefix="/carreras", tags=["carreras"])
+service = SupabaseService()
 
 
-# =====================================================
-# CONTROLLER
-# =====================================================
-
-app = FastAPI(title="Carrera Controller")
-
-repo = CarreraRepository()
-
-
-@app.post("/carreras", response_model=CarreraResponseSchema)
-def crear_carrera(data: CarreraCreateSchema):
-    carrera = Carrera(
-        codigo=data.codigo,
-        nombre=data.nombre,
-        area=data.area,
-        cupos=data.cupos
-    )
-
+@router.get("", response_model=List[CarreraResponse])
+def listar_carreras():
+    """Obtiene todas las carreras."""
     try:
-        repo.guardar(carrera)
-    except ValueError as e:
+        resultado = service.select("carreras")
+        return resultado.data if hasattr(resultado, 'data') else resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{carrera_id}", response_model=CarreraResponse)
+def obtener_carrera(carrera_id: int):
+    """Obtiene una carrera por ID."""
+    try:
+        resultado = service.select("carreras", filters={"id": carrera_id})
+        data = resultado.data if hasattr(resultado, 'data') else resultado
+        if not data or len(data) == 0:
+            raise HTTPException(status_code=404, detail="Carrera no encontrada")
+        return data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("", response_model=CarreraResponse, status_code=201)
+def crear_carrera(carrera: CarreraCreate):
+    """Crea una nueva carrera."""
+    try:
+        resultado = service.insert("carreras", [carrera.dict()])
+        data = resultado.data if hasattr(resultado, 'data') else resultado
+        return data[0] if data else carrera.dict()
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return carrera.obtener_info()
+
+@router.put("/{carrera_id}", response_model=CarreraResponse)
+def actualizar_carrera(carrera_id: int, carrera: CarreraUpdate):
+    """Actualiza una carrera existente."""
+    try:
+        datos = {k: v for k, v in carrera.dict().items() if v is not None}
+        if not datos:
+            raise HTTPException(status_code=400, detail="No hay datos para actualizar")
+        
+        resultado = service.update("carreras", {"id": carrera_id}, datos)
+        data = resultado.data if hasattr(resultado, 'data') else resultado
+        return data[0] if data else None
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/carreras", response_model=List[CarreraResponseSchema])
-def listar_carreras():
-    return [c.obtener_info() for c in repo.listar()]
-
-
-@app.get("/carreras/{codigo}", response_model=CarreraResponseSchema)
-def obtener_carrera(codigo: str):
-    carrera = repo.obtener(codigo)
-    if not carrera:
-        raise HTTPException(status_code=404, detail="Carrera no encontrada")
-    return carrera.obtener_info()
+@router.delete("/{carrera_id}", status_code=204)
+def eliminar_carrera(carrera_id: int):
+    """Elimina una carrera."""
+    try:
+        service.delete("carreras", {"id": carrera_id})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

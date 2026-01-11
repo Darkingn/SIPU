@@ -3,5 +3,10 @@
     "cedula": "1316154382",
     "correo": "1316154382@user.com",
     "contraseña": "1234"
+  },
+  {
+    "cedula": "",
+    "correo": "luisito11@hotmail.com",
+    "contraseña": "luisito11"
   }
 ]
